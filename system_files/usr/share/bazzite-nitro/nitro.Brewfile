@@ -1,0 +1,5 @@
+tap "ublue-os/tap"
+brew "cosign"
+brew "gh"
+brew "yt-dlp"
+cask "ublue-os/tap/vscodium-linux"
