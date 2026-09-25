@@ -190,12 +190,26 @@ EOF
 	check "finds brew outside PATH" called "brew bundle --no-upgrade --file $T/data/nitro.Brewfile"
 }
 
+test_rerun_changes_nothing() {
+	echo "# second run changes nothing"
+	setup
+	echo "app.legcord.Legcord flathub" >"$FAKE_STATE/system-apps"
+	run_script
+	: >"$FAKE_STATE/calls.log"
+	run_script
+	check "exit code 0" test "$RC" -eq 0
+	check "installs nothing" not_called "flatpak install"
+	check "uninstalls nothing" not_called "flatpak uninstall"
+	check "does not download Claude CLI" not_called "curl"
+}
+
 test_fresh_install
 test_migration
 test_migration_install_fails
 test_runtime_repair
 test_brew_missing
 test_brew_not_on_path
+test_rerun_changes_nothing
 
 echo
 if ((failures)); then
