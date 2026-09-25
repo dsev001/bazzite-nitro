@@ -118,6 +118,8 @@ test_fresh_install() {
 	check "installs KeePassXC" called "flatpak install --user -y --noninteractive flathub org.keepassxc.KeePassXC"
 	check "installs Claude Desktop" called "flatpak install --user -y --noninteractive flatpaks ai.claude.desktop"
 	check "uninstalls nothing" not_called "flatpak uninstall"
+	check "runs brew bundle without upgrade" called "brew bundle --no-upgrade --file $T/data/nitro.Brewfile"
+	check "installs Claude CLI" test -e "$HOME/.local/bin/claude"
 }
 
 test_migration() {
@@ -161,10 +163,20 @@ test_runtime_repair() {
 	check "skips present runtime" not_called "noninteractive flathub org.freedesktop.Platform/x86_64/25.08"
 }
 
+test_brew_missing() {
+	echo "# brew missing"
+	setup --no-brew
+	run_script
+	check "exit code 1" test "$RC" -eq 1
+	check "reports missing brew" output_has "brew not found"
+	check "still installs Claude CLI" test -e "$HOME/.local/bin/claude"
+}
+
 test_fresh_install
 test_migration
 test_migration_install_fails
 test_runtime_repair
+test_brew_missing
 
 echo
 if ((failures)); then

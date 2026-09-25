@@ -92,6 +92,26 @@ repair_runtimes() {
 	done < <(flatpak list --user --app --columns=application)
 }
 
+install_brew_packages() {
+	if ! command -v brew >/dev/null; then
+		fail "brew not found, run again after the Homebrew setup has finished"
+		return
+	fi
+	brew bundle --no-upgrade --file "$DATA_DIR/nitro.Brewfile" </dev/null || fail "brew bundle"
+}
+
+install_claude_cli() {
+	if [[ -e "$HOME/.local/bin/claude" ]]; then
+		skipped+=("claude")
+		return
+	fi
+	if curl -fsSL https://claude.ai/install.sh | bash; then
+		installed+=("claude")
+	else
+		fail "install claude"
+	fi
+}
+
 summary() {
 	echo
 	echo "Migrated:  ${migrated[*]:-none}"
@@ -105,4 +125,6 @@ add_remotes
 migrate_system_apps
 install_listed_apps
 repair_runtimes
+install_brew_packages
+install_claude_cli
 summary
