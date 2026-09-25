@@ -1,0 +1,130 @@
+#!/usr/bin/bash
+# Tests for nitro-setup.sh. Fake flatpak, brew and curl commands record every call.
+set -uo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT="$REPO/system_files/usr/libexec/bazzite-nitro/nitro-setup.sh"
+DATA="$REPO/system_files/usr/share/bazzite-nitro"
+ROOT="$(mktemp -d)"
+trap 'rm -rf "$ROOT"' EXIT
+failures=0
+
+# setup [--no-brew]: new sandbox with fake commands and empty state
+setup() {
+	T="$(mktemp -d -p "$ROOT")"
+	export FAKE_STATE="$T/state" HOME="$T/home"
+	mkdir -p "$FAKE_STATE/overrides" "$T/bin" "$T/data" "$HOME"
+	touch "$FAKE_STATE"/{system-apps,user-apps,user-remotes,fail-install,calls.log}
+	echo "org.freedesktop.Platform/x86_64/25.08" >"$FAKE_STATE/runtimes"
+	cp "$DATA/nitro.Brewfile" "$DATA/flatpak-remotes" "$DATA/flatpaks" "$T/data/"
+	printf '%s\n' "app/org.mozilla.firefox/x86_64/stable" \
+		"runtime/org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/25.08" >"$T/data/bazzite-defaults"
+
+	cat >"$T/bin/flatpak" <<'EOF'
+#!/usr/bin/bash
+S="$FAKE_STATE"
+echo "flatpak $*" >>"$S/calls.log"
+cmd="$1"
+shift
+scope="" show_runtime="" pos=()
+for a in "$@"; do
+	case "$a" in
+	--user) scope=user ;;
+	--system) scope=system ;;
+	--show-runtime) show_runtime=1 ;;
+	-*) ;;
+	*) pos+=("$a") ;;
+	esac
+done
+has_app() { awk -v id="$1" '$1 == id { found = 1 } END { exit !found }'; }
+case "$cmd" in
+remote-add) grep -qx "${pos[0]}" "$S/user-remotes" || echo "${pos[0]}" >>"$S/user-remotes" ;;
+remotes) cat "$S/user-remotes" ;;
+list)
+	if [[ "$scope" == system ]]; then
+		awk '{ print $1 "\t" $2 }' "$S/system-apps"
+	else
+		awk '{ print $1 }' "$S/user-apps"
+	fi
+	;;
+override)
+	cat "$S/overrides/${pos[0]}" 2>/dev/null
+	exit 0
+	;;
+install)
+	grep -qx "${pos[1]}" "$S/fail-install" && exit 1
+	if [[ "${pos[1]}" == */* ]]; then
+		echo "${pos[1]}" >>"$S/runtimes"
+	else
+		echo "${pos[1]} ${pos[0]} org.freedesktop.Platform/x86_64/25.08" >>"$S/user-apps"
+	fi
+	;;
+uninstall) sed -i "/^${pos[0]} /d" "$S/system-apps" ;;
+info)
+	if [[ -n "$show_runtime" ]]; then
+		awk -v id="${pos[0]}" '$1 == id { print $3; found = 1 } END { exit !found }' "$S/user-apps"
+	elif [[ "${pos[0]}" == */* ]]; then
+		grep -qx "${pos[0]}" "$S/runtimes"
+	elif [[ "$scope" == user ]]; then
+		has_app "${pos[0]}" <"$S/user-apps"
+	else
+		cat "$S/system-apps" "$S/user-apps" | has_app "${pos[0]}"
+	fi
+	;;
+esac
+EOF
+
+	cat >"$T/bin/curl" <<'EOF'
+#!/usr/bin/bash
+echo "curl $*" >>"$FAKE_STATE/calls.log"
+echo 'mkdir -p "$HOME/.local/bin" && touch "$HOME/.local/bin/claude"'
+EOF
+
+	if [[ "${1:-}" != --no-brew ]]; then
+		cat >"$T/bin/brew" <<'EOF'
+#!/usr/bin/bash
+echo "brew $*" >>"$FAKE_STATE/calls.log"
+EOF
+	fi
+	chmod +x "$T"/bin/*
+}
+
+run_script() {
+	PATH="$T/bin:/usr/bin:/bin" NITRO_DATA_DIR="$T/data" bash "$SCRIPT" >"$T/out" 2>&1
+	RC=$?
+}
+
+check() {
+	if "${@:2}"; then
+		echo "ok   - $1"
+	else
+		echo "FAIL - $1"
+		failures=$((failures + 1))
+	fi
+}
+called() { grep -qF -- "$1" "$FAKE_STATE/calls.log"; }
+not_called() { ! called "$1"; }
+output_has() { grep -qF -- "$1" "$T/out"; }
+
+test_fresh_install() {
+	echo "# fresh install"
+	setup
+	run_script
+	check "exit code 0" test "$RC" -eq 0
+	check "adds flathub remote" called "flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+	check "adds flatpaks remote" called "flatpak remote-add --user --if-not-exists flatpaks https://francoism90.github.io/flatpaks/index.flatpakrepo"
+	check "installs Legcord" called "flatpak install --user -y --noninteractive flathub app.legcord.Legcord"
+	check "installs Spotify" called "flatpak install --user -y --noninteractive flathub com.spotify.Client"
+	check "installs KeePassXC" called "flatpak install --user -y --noninteractive flathub org.keepassxc.KeePassXC"
+	check "installs Claude Desktop" called "flatpak install --user -y --noninteractive flatpaks ai.claude.desktop"
+	check "uninstalls nothing" not_called "flatpak uninstall"
+}
+
+test_fresh_install
+
+echo
+if ((failures)); then
+	echo "$failures check(s) failed"
+	exit 1
+fi
+echo "all checks passed"
