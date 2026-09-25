@@ -90,7 +90,7 @@ EOF
 }
 
 run_script() {
-	PATH="$T/bin:/usr/bin:/bin" NITRO_DATA_DIR="$T/data" bash "$SCRIPT" >"$T/out" 2>&1
+	PATH="$T/bin:/usr/bin:/bin" NITRO_DATA_DIR="$T/data" NITRO_BREW="$T/linuxbrew/bin/brew" bash "$SCRIPT" >"$T/out" 2>&1
 	RC=$?
 }
 
@@ -172,11 +172,30 @@ test_brew_missing() {
 	check "still installs Claude CLI" test -e "$HOME/.local/bin/claude"
 }
 
+test_brew_not_on_path() {
+	echo "# brew installed but not on PATH"
+	setup --no-brew
+	mkdir -p "$T/linuxbrew/bin"
+	cat >"$T/linuxbrew/bin/brew" <<'EOF'
+#!/usr/bin/bash
+if [[ "$1" == shellenv ]]; then
+	echo "export PATH=\"$(dirname "$0"):\$PATH\""
+	exit 0
+fi
+echo "brew $*" >>"$FAKE_STATE/calls.log"
+EOF
+	chmod +x "$T/linuxbrew/bin/brew"
+	run_script
+	check "exit code 0" test "$RC" -eq 0
+	check "finds brew outside PATH" called "brew bundle --no-upgrade --file $T/data/nitro.Brewfile"
+}
+
 test_fresh_install
 test_migration
 test_migration_install_fails
 test_runtime_repair
 test_brew_missing
+test_brew_not_on_path
 
 echo
 if ((failures)); then

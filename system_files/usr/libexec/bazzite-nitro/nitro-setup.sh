@@ -4,6 +4,7 @@
 set -uo pipefail
 
 DATA_DIR="${NITRO_DATA_DIR:-/usr/share/bazzite-nitro}"
+BREW="${NITRO_BREW:-/home/linuxbrew/.linuxbrew/bin/brew}"
 
 migrated=()
 installed=()
@@ -93,6 +94,10 @@ repair_runtimes() {
 }
 
 install_brew_packages() {
+	# brew is only on PATH in interactive shells, see /etc/profile.d/brew.sh
+	if ! command -v brew >/dev/null && [[ -x "$BREW" ]]; then
+		eval "$("$BREW" shellenv)"
+	fi
 	if ! command -v brew >/dev/null; then
 		fail "brew not found, run again after the Homebrew setup has finished"
 		return
