@@ -134,6 +134,7 @@ test_migration() {
 	check "does not install Firefox" not_called "noninteractive flathub org.mozilla.firefox"
 	check "does not remove Firefox" not_called "noninteractive org.mozilla.firefox"
 	check "does not migrate app with overrides" not_called "noninteractive flathub com.example.Overridden"
+	check "does not remove app with overrides" not_called "noninteractive com.example.Overridden"
 	check "reports app with overrides" output_has "Keeping com.example.Overridden in system scope"
 	check "does not install app from unknown remote" not_called "noninteractive fedora org.example.FromFedora"
 	check "reports unknown remote" output_has "remote fedora missing in user scope"
