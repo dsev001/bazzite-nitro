@@ -151,9 +151,20 @@ test_migration_install_fails() {
 	check "reports failed migration" output_has "migrate app.legcord.Legcord"
 }
 
+test_runtime_repair() {
+	echo "# runtime repair"
+	setup
+	echo "org.keepassxc.KeePassXC flathub org.kde.Platform/x86_64/5.15-25.08" >"$FAKE_STATE/user-apps"
+	run_script
+	check "exit code 0" test "$RC" -eq 0
+	check "installs missing KDE runtime" called "flatpak install --user -y --noninteractive flathub org.kde.Platform/x86_64/5.15-25.08"
+	check "skips present runtime" not_called "noninteractive flathub org.freedesktop.Platform/x86_64/25.08"
+}
+
 test_fresh_install
 test_migration
 test_migration_install_fails
+test_runtime_repair
 
 echo
 if ((failures)); then

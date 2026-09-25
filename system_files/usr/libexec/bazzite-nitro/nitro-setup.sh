@@ -73,6 +73,25 @@ install_listed_apps() {
 	done <"$DATA_DIR/flatpaks"
 }
 
+# Bazzite removes system runtimes that only user apps need, so reinstall them in user scope.
+# Runtimes always come from flathub, also for apps from other remotes.
+repair_runtimes() {
+	local app runtime
+	while read -r app; do
+		[[ -z "$app" ]] && continue
+		if ! runtime="$(flatpak info --user --show-runtime "$app")"; then
+			fail "read runtime of $app"
+			continue
+		fi
+		flatpak info "$runtime" >/dev/null 2>&1 && continue
+		if install_user flathub "$runtime"; then
+			installed+=("$runtime")
+		else
+			fail "install runtime $runtime"
+		fi
+	done < <(flatpak list --user --app --columns=application)
+}
+
 summary() {
 	echo
 	echo "Migrated:  ${migrated[*]:-none}"
@@ -85,4 +104,5 @@ summary() {
 add_remotes
 migrate_system_apps
 install_listed_apps
+repair_runtimes
 summary
