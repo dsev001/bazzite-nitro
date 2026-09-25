@@ -120,7 +120,39 @@ test_fresh_install() {
 	check "uninstalls nothing" not_called "flatpak uninstall"
 }
 
+test_migration() {
+	echo "# migration"
+	setup
+	printf '%s\n' "app.legcord.Legcord flathub" "org.mozilla.firefox flathub" \
+		"com.example.Overridden flathub" "org.example.FromFedora fedora" >"$FAKE_STATE/system-apps"
+	printf '[Context]\nshared=network;\n' >"$FAKE_STATE/overrides/com.example.Overridden"
+	run_script
+	check "exit code 1 (unknown remote)" test "$RC" -eq 1
+	check "installs Legcord in user scope" called "flatpak install --user -y --noninteractive flathub app.legcord.Legcord"
+	check "installs Legcord only once" test "$(grep -c "install --user -y --noninteractive flathub app.legcord.Legcord" "$FAKE_STATE/calls.log")" -eq 1
+	check "removes system Legcord" called "flatpak uninstall --system -y --noninteractive app.legcord.Legcord"
+	check "does not install Firefox" not_called "noninteractive flathub org.mozilla.firefox"
+	check "does not remove Firefox" not_called "noninteractive org.mozilla.firefox"
+	check "does not migrate app with overrides" not_called "noninteractive flathub com.example.Overridden"
+	check "reports app with overrides" output_has "Keeping com.example.Overridden in system scope"
+	check "does not install app from unknown remote" not_called "noninteractive fedora org.example.FromFedora"
+	check "reports unknown remote" output_has "remote fedora missing in user scope"
+}
+
+test_migration_install_fails() {
+	echo "# migration: user install fails"
+	setup
+	echo "app.legcord.Legcord flathub" >"$FAKE_STATE/system-apps"
+	echo "app.legcord.Legcord" >"$FAKE_STATE/fail-install"
+	run_script
+	check "exit code 1" test "$RC" -eq 1
+	check "keeps system copy" not_called "flatpak uninstall"
+	check "reports failed migration" output_has "migrate app.legcord.Legcord"
+}
+
 test_fresh_install
+test_migration
+test_migration_install_fails
 
 echo
 if ((failures)); then

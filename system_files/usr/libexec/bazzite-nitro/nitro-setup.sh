@@ -28,6 +28,37 @@ add_remotes() {
 	done <"$DATA_DIR/flatpak-remotes"
 }
 
+is_bazzite_default() {
+	awk -F/ -v id="$1" '$1 == "app" && $2 == id { found = 1 } END { exit !found }' "$DATA_DIR/bazzite-defaults"
+}
+
+migrate_system_apps() {
+	local app origin
+	while read -r app origin; do
+		[[ -z "$app" ]] && continue
+		is_bazzite_default "$app" && continue
+		if [[ -n "$(flatpak override --system --show "$app" 2>/dev/null)" ]]; then
+			echo "Keeping $app in system scope: it has system overrides"
+			skipped+=("$app")
+			continue
+		fi
+		if ! flatpak remotes --user --columns=name | grep -qx "$origin"; then
+			fail "migrate $app: remote $origin missing in user scope"
+			continue
+		fi
+		flatpak info --user "$app" >/dev/null 2>&1 || install_user "$origin" "$app"
+		if ! flatpak info --user "$app" >/dev/null 2>&1; then
+			fail "migrate $app: user install failed"
+			continue
+		fi
+		if flatpak uninstall --system -y --noninteractive "$app" </dev/null; then
+			migrated+=("$app")
+		else
+			fail "migrate $app: removing system copy failed"
+		fi
+	done < <(flatpak list --system --app --columns=application,origin)
+}
+
 install_listed_apps() {
 	local remote app
 	while read -r remote app || [[ -n "$remote" ]]; do
@@ -52,5 +83,6 @@ summary() {
 }
 
 add_remotes
+migrate_system_apps
 install_listed_apps
 summary
