@@ -310,6 +310,11 @@ _build-bib $target_image $tag $type $config: (_rootful_load_image target_image t
 
     BUILDTMP=$(mktemp -p "${PWD}" -d -t _build-bib.XXXXXXXXXX)
 
+    # Fill in the image owner, see the kickstart in disk_config/iso.toml
+    CONFIGTMP=$(mktemp -p "${PWD}" -t _build_bib_config.XXXXXXXXXX)
+    trap 'rm -f "${CONFIGTMP}"' EXIT
+    sed "s|@OWNER@|${repo_organization,,}|" "${config}" >"${CONFIGTMP}"
+
     sudo podman run \
       --rm \
       -it \
@@ -317,7 +322,7 @@ _build-bib $target_image $tag $type $config: (_rootful_load_image target_image t
       --pull=newer \
       --net=host \
       --security-opt label=type:unconfined_t \
-      -v $(pwd)/${config}:/config.toml:ro \
+      -v ${CONFIGTMP}:/config.toml:ro \
       -v $BUILDTMP:/output \
       -v /var/lib/containers/storage:/var/lib/containers/storage \
       "${bib_image}" \
