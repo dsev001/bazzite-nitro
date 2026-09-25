@@ -34,3 +34,8 @@ mv /var/opt/brave.com /usr/lib/opt/brave.com
 echo 'L+ /var/opt/brave.com - - - - /usr/lib/opt/brave.com' >/usr/lib/tmpfiles.d/brave-origin.conf
 # /var/opt itself is recreated at boot by rpm-ostree-0-integration-opt-usrlocal.conf
 rmdir /var/opt
+
+### Bazzite default Flatpaks, used by ujust nitro-setup to skip them during migration
+mkdir -p /usr/share/bazzite-nitro
+curl -fsSL https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/kde_flatpaks/flatpaks \
+	-o /usr/share/bazzite-nitro/bazzite-defaults
