@@ -42,6 +42,17 @@ Images are signed with cosign. Verify with the key from this repository:
 cosign verify --key cosign.pub ghcr.io/<owner>/bazzite-nitro:latest
 ```
 
+### Enforce the signature on the installed system
+
+The image ships the public key and a `policy.json` entry for its own repository. The installer and a plain `bootc switch` still register the image as `ostree-unverified-registry`, so `bootc upgrade` does not check signatures. To enforce them, switch once from a booted image that already ships the policy:
+
+```bash
+sudo bootc switch --enforce-container-sigpolicy ghcr.io/<owner>/bazzite-nitro:latest
+systemctl reboot
+```
+
+`rpm-ostree status` then shows the origin as `ostree-image-signed:docker://…`, and `bootc upgrade` rejects images that are not signed with this key. To return to unverified updates, run `sudo bootc switch` without the flag.
+
 ## Updates and rollback
 
 CI builds a new image every day and on every push to `main`. To update by hand:

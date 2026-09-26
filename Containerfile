@@ -2,6 +2,7 @@
 FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
+COPY cosign.pub /cosign.pub
 
 # Base Image
 FROM ghcr.io/ublue-os/bazzite-nvidia-open:stable@sha256:de1d2b57d34f96d14927bb791f5ee4882c285b4b5957398dc230384c6d823bfe
@@ -25,6 +26,10 @@ FROM ghcr.io/ublue-os/bazzite-nvidia-open:stable@sha256:de1d2b57d34f96d14927bb79
 ## by the package manager.
 
 # RUN rm /opt && mkdir /opt
+
+### SIGNATURE POLICY
+## Repository of this image, passed by `just build`. build.sh writes it into policy.json.
+ARG IMAGE_REPOSITORY
 
 ### MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
