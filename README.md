@@ -1,11 +1,11 @@
 # bazzite-nitro
 
-A personal [Bazzite](https://bazzite.gg) image for an Acer Nitro ANV16S laptop. It is based on `bazzite-nvidia-open:stable` and adds a few things on top.
+An opinionated [Bazzite](https://bazzite.gg) image, developed on an Acer Nitro ANV16S laptop. It is based on `bazzite-nvidia-open:stable` and adds a few things on top. Like the base image, it needs an NVIDIA GPU of the GTX 16 or RTX series or newer.
 
 ## What's different from Bazzite
 
 - **Brave Origin** is installed as a system package. The Brave repo ships disabled, so updates arrive with each new image.
-- **`ujust nitro-setup`** restores personal apps after a fresh install:
+- **`ujust nitro-setup`** installs the chosen apps after a fresh install:
   - Flatpaks in user scope. System Flatpaks that Bazzite does not ship move to user scope.
   - Homebrew packages
   - the Claude CLI
@@ -30,7 +30,7 @@ systemctl reboot
 
 1. Run the **Build disk images** workflow in GitHub Actions.
 2. Download the `anaconda-iso` artifact and write `install.iso` to a USB stick.
-3. Boot from the stick and install. The installed system tracks `ghcr.io/<owner>/bazzite-nitro:latest`.
+3. Boot from the stick and install. The installed system tracks `ghcr.io/<owner>/bazzite-nitro:latest` with signature verification enabled.
 
 After the first login, run `ujust nitro-setup`.
 
@@ -44,7 +44,7 @@ cosign verify --key cosign.pub ghcr.io/<owner>/bazzite-nitro:latest
 
 ### Enforce the signature on the installed system
 
-The image ships the public key and a `policy.json` entry for its own repository. The installer and a plain `bootc switch` still register the image as `ostree-unverified-registry`, so `bootc upgrade` does not check signatures. To enforce them, switch once from a booted image that already ships the policy:
+The image ships the public key and a `policy.json` entry for its own repository. Installs from the ISO enforce signatures from the start. A system that was installed earlier, or moved to the image with a plain `bootc switch`, registers it as `ostree-unverified-registry`, so `bootc upgrade` does not check signatures there. To enforce them, switch once from a booted image that already ships the policy:
 
 ```bash
 sudo bootc switch --enforce-container-sigpolicy ghcr.io/<owner>/bazzite-nitro:latest
