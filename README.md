@@ -11,6 +11,7 @@ A personal [Bazzite](https://bazzite.gg) image for an Acer Nitro ANV16S laptop. 
   - the Claude CLI
 
   The lists live in `system_files/usr/share/bazzite-nitro/`. The recipe only adds what is missing, so it is safe to run again.
+- **`acpi_backlight=native`** kernel argument, so the display brightness can be changed. It comes from `/usr/lib/bootc/kargs.d/`.
 
 Everything else is plain Bazzite.
 
@@ -48,6 +49,8 @@ CI builds a new image every day and on every push to `main`. To update by hand:
 ```bash
 sudo bootc upgrade && systemctl reboot
 ```
+
+Kernel arguments from the image are only applied by `bootc`, not by `rpm-ostree`. With layered packages, the automatic update (`uupd`) falls back to `rpm-ostree`, and new kernel arguments are not applied.
 
 To go back to the previous image:
 
