@@ -19,6 +19,12 @@ cp -avf "/ctx/system_files"/. /
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
+### Terra Mesa repo
+# Bazzite disables terra-mesa in /etc/dnf/repos.override.d, but bib reads only
+# /etc/yum.repos.d when it depsolves the ISO and fails on the repo's file:// GPG key.
+# Write the same state into the repo file.
+sed -i 's/^enabled=1$/enabled=0/' /etc/yum.repos.d/terra-mesa.repo
+
 ### Brave Origin
 # Third-party repo: ship it disabled, updates arrive via image rebuilds.
 dnf5 config-manager addrepo --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo

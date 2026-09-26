@@ -1,0 +1,3 @@
+# The default nvidia_wmi_ec_backlight does not control the eDP panel on the Intel iGPU.
+# With native, i915 registers intel_backlight and brightness keys work.
+kargs = ["acpi_backlight=native"]
