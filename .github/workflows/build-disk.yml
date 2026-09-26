@@ -30,7 +30,8 @@ concurrency:
 jobs:
   build:
     name: Build disk images
-    runs-on: ubuntu-26.04
+    # bib fails on ubuntu-26.04 (mount denied in osbuild), see ublue-os/image-template#269
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
