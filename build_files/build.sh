@@ -45,3 +45,21 @@ rmdir /var/opt
 mkdir -p /usr/share/bazzite-nitro
 curl -fsSL https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/kde_flatpaks/flatpaks \
 	-o /usr/share/bazzite-nitro/bazzite-defaults
+
+### Signature policy
+# CI signs every image on main. Ship the public key and a policy entry for this
+# repository, so bootc verifies updates once the deployment was switched with
+# --enforce-container-sigpolicy (see README). IMAGE_REPOSITORY is a build arg set by
+# `just build`. The jq merge keeps the Bazzite entries in place.
+install -D -m 0644 /ctx/cosign.pub /etc/pki/containers/bazzite-nitro.pub
+jq --arg repo "${IMAGE_REPOSITORY:?}" \
+	'.transports.docker[$repo] = [{"type": "sigstoreSigned", "keyPath": "/etc/pki/containers/bazzite-nitro.pub", "signedIdentity": {"type": "matchRepository"}}]' \
+	/etc/containers/policy.json >/tmp/policy.json
+mv /tmp/policy.json /etc/containers/policy.json
+printf 'docker:\n  %s:\n    use-sigstore-attachments: true\n' "${IMAGE_REPOSITORY}" \
+	>/etc/containers/registries.d/bazzite-nitro.yaml
+
+### Checks
+# A wrong or empty key would cut the device off from updates after the switch.
+echo "73cbf8fc8e821d09d5166a77134c9935c67c133a48d0844bcb77687c9645876e  /etc/pki/containers/bazzite-nitro.pub" | sha256sum -c
+jq -e --arg repo "${IMAGE_REPOSITORY}" '.transports.docker[$repo][0].type == "sigstoreSigned"' /etc/containers/policy.json
