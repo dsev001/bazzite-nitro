@@ -1,0 +1,3 @@
+# mako base config; personal settings in ~/.config/mako/user, loaded last so they win
+default-timeout=5000
+include=~/.config/mako/user

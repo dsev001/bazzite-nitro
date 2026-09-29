@@ -1,0 +1,4 @@
+# Environment for the Hyprland session only (read by uwsm); Plasma never reads this file
+export QT_QPA_PLATFORMTHEME=kde
+export XCURSOR_THEME=breeze_cursors
+export XCURSOR_SIZE=24

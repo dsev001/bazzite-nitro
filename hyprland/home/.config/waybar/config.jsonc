@@ -1,0 +1,50 @@
+// Personal Waybar config. Waybar keeps the FIRST definition of a key,
+// so values in this file win over base.jsonc and the Fedora defaults
+{
+    "include": ["~/.config/waybar/base.jsonc"],
+
+    // Apply style.css changes on save
+    "reload_style_on_change": true,
+
+    // Islands: floating 8 px below the edge, indented like the window gaps
+    "height": 27,
+    "spacing": 0,
+    "margin-top": 8,
+    "margin-left": 20,
+    "margin-right": 20,
+
+    // Pills without numbers; style.css draws them
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "format-icons": { "default": "" }
+    },
+
+    // Symbols Nerd Font icons
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": " aus",
+        "format-icons": { "default": ["", "", ""] }
+    },
+    "backlight": {
+        "format": " {percent}%"
+    },
+    "battery": {
+        "states": { "warning": 20, "critical": 10 },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "custom/powermenu": {
+        "format": ""
+    },
+    // waybar formats dates in its own locale, not LANG
+    "clock": {
+        "format": "{:%a %d.%m.  %H:%M}",
+        "locale": "de_DE.UTF-8"
+    },
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    }
+}

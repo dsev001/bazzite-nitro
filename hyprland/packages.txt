@@ -1,0 +1,24 @@
+# Layered on bazzite-nitro with rpm-ostree (COPR repo files in etc/yum.repos.d/)
+blueman
+brightnessctl
+cliphist
+fuzzel
+grimblast
+hypridle
+hyprland
+hyprland-guiutils
+hyprland-uwsm
+hyprlock
+hyprpaper
+hyprpicker
+hyprshutdown
+hyprsunset
+mako
+matugen
+network-manager-applet
+pavucontrol
+playerctl
+satty
+swayosd
+waybar
+xdg-desktop-portal-hyprland

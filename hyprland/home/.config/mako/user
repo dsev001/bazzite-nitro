@@ -1,0 +1,20 @@
+# Personal mako settings, loaded at the end of ~/.config/mako/config
+# Colors from the wallpaper (matugen); own settings below override them
+include=~/.config/mako/colors
+
+# Below the clock island, in line with the bar and the windows
+anchor=top-right
+outer-margin=8,20,0,0
+margin=0,0,8,0
+width=360
+padding=14
+border-size=2
+border-radius=16
+font=Noto Sans 11
+max-icon-size=48
+icon-location=left
+default-timeout=5000
+
+# Urgent notifications (error border, no timeout). Must stay the LAST line:
+# every line after a section header belongs to that section
+include=~/.config/mako/colors-urgent

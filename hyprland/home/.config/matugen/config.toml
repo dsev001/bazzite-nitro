@@ -1,0 +1,28 @@
+# matugen: Material You colors from the wallpaper, run by ~/.config/hypr/scripts/wallpaper.sh
+# Each template writes one color file; the personal file of each tool includes it
+
+[config]
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/waybar.css"
+output_path = "~/.config/waybar/colors.css"
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/hyprland.lua"
+output_path = "~/.config/hypr/colors.lua"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock.conf"
+output_path = "~/.config/hypr/colors.conf"
+
+[templates.fuzzel]
+input_path = "~/.config/matugen/templates/fuzzel.ini"
+output_path = "~/.config/fuzzel/colors.ini"
+
+[templates.mako]
+input_path = "~/.config/matugen/templates/mako"
+output_path = "~/.config/mako/colors"
+
+[templates.mako_urgent]
+input_path = "~/.config/matugen/templates/mako-urgent"
+output_path = "~/.config/mako/colors-urgent"

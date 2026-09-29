@@ -1,0 +1,18 @@
+// Waybar base config: neutral layout and modules
+// config.jsonc includes this file; module formats come from the Fedora defaults
+{
+    "include": ["/etc/xdg/waybar/config.jsonc"],
+    "modules-left": ["tray", "pulseaudio", "backlight", "battery", "custom/powermenu"],
+    "modules-center": ["hyprland/workspaces"],
+    "modules-right": ["clock"],
+    "clock": {
+        "format": "{:%a %d.%m.  %H:%M}",
+        "tooltip-format": "<tt>{calendar}</tt>"
+    },
+    // Own name: the Fedora defaults already define custom/power with another menu
+    "custom/powermenu": {
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "~/.config/hypr/scripts/power-menu.sh"
+    }
+}
