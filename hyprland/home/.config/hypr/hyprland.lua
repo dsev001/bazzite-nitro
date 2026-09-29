@@ -27,7 +27,8 @@ local menu        = "fuzzel"
 ---- AUTOSTART ----
 -------------------
 
--- uwsm also starts XDG autostart entries (nm-applet, blueman-applet), but not
+-- uwsm also starts XDG autostart entries (nm-applet and blueman-applet are off
+-- via ~/.config/autostart, waybar shows Wi-Fi and Bluetooth), but not
 -- pam_kwallet_init: its entry has X-systemd-skip=true, so it is started here first
 -- Each tool runs as its own systemd unit, logs: journalctl --user -u 'app-*<tool>*'
 hl.on("hyprland.start", function ()

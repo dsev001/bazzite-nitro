@@ -4,6 +4,10 @@
 hl.config({
     input = {
         kb_layout = "de",
+        -- Keyboard focus only on click; hover and scroll still reach the window under the cursor
+        follow_mouse = 2,
+        -- No focus change when the cursor crosses between tiled and floating windows
+        float_switch_override_focus = 0,
     },
 })
 

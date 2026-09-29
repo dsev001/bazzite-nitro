@@ -2,12 +2,33 @@
 // config.jsonc includes this file; module formats come from the Fedora defaults
 {
     "include": ["/etc/xdg/waybar/config.jsonc"],
-    "modules-left": ["tray", "pulseaudio", "backlight", "battery", "custom/powermenu"],
-    "modules-center": ["hyprland/workspaces"],
-    "modules-right": ["clock"],
+    "modules-left": ["tray"],
+    "modules-center": ["hyprland/workspaces", "wlr/taskbar"],
+    "modules-right": ["clock", "pulseaudio", "backlight", "battery", "network", "bluetooth", "custom/powermenu"],
+    // Taskbar: windows from all workspaces and monitors; click focuses, middle click closes
+    "wlr/taskbar": {
+        "all-outputs": true,
+        "on-click": "activate",
+        "on-click-middle": "close"
+    },
     "clock": {
         "format": "{:%a %d.%m.  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>"
+    },
+    // Wi-Fi and Bluetooth replace nm-applet and blueman-applet in the tray (both off via XDG autostart)
+    // null drops the Fedora click-to-toggle format of network
+    "network": {
+        "format-alt": null,
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)",
+        "tooltip-format-ethernet": "{ifname}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "nm-connection-editor"
+    },
+    "bluetooth": {
+        "tooltip-format": "{controller_alias}",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "blueman-manager"
     },
     // Own name: the Fedora defaults already define custom/power with another menu
     "custom/powermenu": {

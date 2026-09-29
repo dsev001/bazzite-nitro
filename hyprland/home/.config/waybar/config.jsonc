@@ -13,17 +13,35 @@
     "margin-left": 20,
     "margin-right": 20,
 
-    // Pills without numbers; style.css draws them
+    // Pills with the workspace number; style.css shows it only in the active one
     "hyprland/workspaces": {
-        "format": "{icon}",
-        "format-icons": { "default": "" }
+        "format": "{id}"
     },
 
     // Symbols Nerd Font icons
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "format-muted": " aus",
+        // Bluetooth like the speaker, without the Fedora microphone state
+        "format-bluetooth": "{icon} {volume}%",
+        "format-bluetooth-muted": " aus",
         "format-icons": { "default": ["", "", ""] }
+    },
+    // Wi-Fi strength and Bluetooth state as icons only, details in the tooltip
+    "network": {
+        "format-wifi": "{icon}",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈀",
+        "format-disconnected": "󰤮",
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
+    },
+    "bluetooth": {
+        "format": "󰂯",
+        "format-disabled": "󰂲",
+        "format-off": "󰂲",
+        "format-connected": "󰂱",
+        "format-connected-battery": "󰂱",
+        "format-no-controller": ""
     },
     "backlight": {
         "format": " {percent}%"
@@ -31,6 +49,7 @@
     "battery": {
         "states": { "warning": 20, "critical": 10 },
         "format": "{icon} {capacity}%",
+        "format-full": "{icon} {capacity}%",
         "format-charging": " {capacity}%",
         "format-plugged": " {capacity}%",
         "format-icons": ["", "", "", "", ""]
@@ -38,9 +57,9 @@
     "custom/powermenu": {
         "format": ""
     },
-    // waybar formats dates in its own locale, not LANG
+    // waybar formats dates in its own locale, not LANG; the L flag applies it to %a
     "clock": {
-        "format": "{:%a %d.%m.  %H:%M}",
+        "format": "{:L%a %d.%m.  %H:%M}",
         "locale": "de_DE.UTF-8"
     },
     "tray": {
