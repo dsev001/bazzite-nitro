@@ -5,15 +5,10 @@
 # WIFI_MENU_SCAN=<file>: use this file instead of the nmcli scan (tests)
 set -u
 
-ns=wifi-menu
-# Below the right waybar island: fuzzel starts below the bar's exclusive zone,
-# so y is only the gap; x is the bar margin-right
-y_margin=8
-x_margin=20
-
-# Second click on the icon: close the open dropdown and stop
-# Anchored to fuzzel, so shells that only mention the namespace stay alive
-pkill -f -- "^fuzzel .*--namespace=$ns( |$)" && exit 0
+dropdown_ns=dropdown-wifi
+# shellcheck source=dropdown.sh
+. "${BASH_SOURCE[0]%/*}/dropdown.sh"
+[ "${1:-}" = --print ] || dropdown_toggle
 
 # Stable nmcli output for parsing; the texts shown to the user come from this script
 export LC_MESSAGES=C
@@ -25,25 +20,6 @@ if [ -z "$dev" ]; then
     notify "Kein WLAN-Gerät"
     exit 1
 fi
-
-# Monitor under the mouse pointer, so the dropdown opens where the click was
-output() {
-    local pos
-    pos=$(hyprctl -j cursorpos) || return 0
-    hyprctl -j monitors | jq -r --argjson p "$pos" '
-        .[] | select($p.x >= .x and $p.x < .x + .width / .scale
-                 and $p.y >= .y and $p.y < .y + .height / .scale) | .name' | head -n1
-}
-
-# dropdown [fuzzel flags]: fuzzel docked below the right island, menu lines on stdin
-# on-demand focus: clicks outside reach waybar and windows, and a click elsewhere closes fuzzel
-dropdown() {
-    local out
-    out=$(output)
-    fuzzel --dmenu --namespace="$ns" ${out:+--output="$out"} --keyboard-focus=on-demand \
-        --anchor=top-right --x-margin="$x_margin" --y-margin="$y_margin" \
-        --width=32 --lines=12 --minimal-lines --no-sort "$@"
-}
 
 scan() {
     if [ -n "${WIFI_MENU_SCAN:-}" ]; then

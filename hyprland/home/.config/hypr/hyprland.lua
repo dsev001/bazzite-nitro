@@ -174,7 +174,7 @@ local mainMod = "SUPER"
 
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("~/.config/hypr/scripts/power-menu.sh"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("~/.config/hypr/scripts/power-menu.sh --center"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
@@ -222,8 +222,8 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- Close the Wi-Fi dropdown (wifi-menu.sh) on a click outside it; fuzzel keeps the focus otherwise
--- Clicks on waybar are left out: the icon closes the dropdown itself
+-- Close the dropdowns of the right waybar island (scripts/dropdown.sh) on a click outside them;
+-- fuzzel keeps the focus otherwise. Clicks on waybar are left out: the icons close them themselves
 local function inside(p, l) return p.x >= l.x and p.x < l.x + l.w and p.y >= l.y and p.y < l.y + l.h end
 hl.bind("mouse:272", function ()
     local p = hl.get_cursor_pos()
@@ -231,12 +231,12 @@ hl.bind("mouse:272", function ()
     local menu = false
     for _, l in ipairs(hl.get_layers()) do
         if l.namespace == "waybar" and inside(p, l) then return end
-        if l.namespace == "wifi-menu" then
+        if l.namespace:find("^dropdown%-") then
             if inside(p, l) then return end
             menu = true
         end
     end
-    if menu then hl.exec_cmd("pkill -f -- '^fuzzel .*--namespace=wifi-menu( |$)'") end
+    if menu then hl.exec_cmd("pkill -f -- '^fuzzel .*--namespace=dropdown-[a-z]+( |$)'") end
 end, { non_consuming = true })
 
 -- Volume and brightness through swayosd (shows the OSD), also when locked

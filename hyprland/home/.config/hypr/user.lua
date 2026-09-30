@@ -20,8 +20,8 @@ require("./colors")
 -- Windows start 8 px below the bar, like the bar's own margin to the screen edge
 hl.config({ general = { gaps_out = { top = 8, right = 20, bottom = 20, left = 20 } } })
 
--- Frosted glass behind fuzzel (launcher and wifi-menu.sh); ignore_alpha keeps the transparent corners sharp
-hl.layer_rule({ name = "blur-fuzzel", match = { namespace = "^(launcher|wifi-menu)$" }, blur = true, ignore_alpha = 0.5 })
+-- Frosted glass behind fuzzel (launcher and the dropdowns of scripts/dropdown.sh); ignore_alpha keeps the transparent corners sharp
+hl.layer_rule({ name = "blur-fuzzel", match = { namespace = "^(launcher|dropdown-.*)$" }, blur = true, ignore_alpha = 0.5 })
 
 -- Frosted glass behind mako notifications
 hl.layer_rule({ name = "blur-mako", match = { namespace = "^notifications$" }, blur = true, ignore_alpha = 0.5 })
