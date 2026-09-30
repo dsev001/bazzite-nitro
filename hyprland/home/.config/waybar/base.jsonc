@@ -29,7 +29,8 @@
         "tooltip-format": "{controller_alias}",
         "tooltip-format-connected": "{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}",
-        "on-click": "blueman-manager"
+        // Device list below the right island; blueman-manager is its "Mehr…" entry
+        "on-click": "~/.config/hypr/scripts/bt-menu.sh"
     },
     // Own name: the Fedora defaults already define custom/power with another menu
     "custom/powermenu": {

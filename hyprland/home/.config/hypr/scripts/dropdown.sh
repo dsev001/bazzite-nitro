@@ -1,5 +1,6 @@
 # Shared fuzzel dropdown for the menus of the right waybar island (wifi-menu.sh, power-menu.sh)
 # Sourced, not run: set dropdown_ns (dropdown-<name>) first; dropdown_center=1 opens it centered instead
+# DROPDOWN_OUTPUT=<monitor> opens it on that monitor instead of the one under the mouse (tests)
 # hyprland.lua (click outside closes) and user.lua (blur) match the namespace prefix dropdown-
 
 # Below the right waybar island: fuzzel starts below the bar's exclusive zone,
@@ -32,7 +33,7 @@ dropdown() {
     local -a place=()
     if [ -z "${dropdown_center:-}" ]; then
         local out
-        out=$(dropdown_output)
+        out=${DROPDOWN_OUTPUT:-$(dropdown_output)}
         place=(--anchor=top-right --x-margin="$dropdown_x" --y-margin="$dropdown_y" ${out:+--output="$out"})
     fi
     fuzzel --dmenu --namespace="$dropdown_ns" --keyboard-focus=on-demand "${place[@]}" \
