@@ -4,12 +4,23 @@
     "include": ["/etc/xdg/waybar/config.jsonc"],
     "modules-left": ["tray"],
     "modules-center": ["hyprland/workspaces", "wlr/taskbar"],
-    "modules-right": ["clock", "pulseaudio", "backlight", "battery", "network", "bluetooth", "custom/powermenu"],
+    "modules-right": ["clock", "pulseaudio", "pulseaudio/slider", "backlight", "battery", "network", "bluetooth", "custom/powermenu"],
     // Taskbar: windows from all workspaces and monitors; click focuses, middle click closes
     "wlr/taskbar": {
         "all-outputs": true,
         "on-click": "activate",
         "on-click-middle": "close"
+    },
+    // Volume: a right click opens the audio menu and shows the slider next to it
+    // The slider is 0 px wide until audio-menu.sh writes audio-slider.css (see style.css)
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100
+    },
+    // null drops Fedora's pavucontrol on left click
+    "pulseaudio": {
+        "on-click": null,
+        "on-click-right": "~/.config/hypr/scripts/audio-menu.sh"
     },
     "clock": {
         "format": "{:%a %d.%m.  %H:%M}",

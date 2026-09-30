@@ -1,0 +1,28 @@
+/* Volume slider while the audio menu is open: audio-menu.sh copies this file to audio-slider.css
+   The slider replaces backlight to power and takes their space (fixed widths in style.css, measured),
+   so the island keeps its width and the volume icon stays under the mouse */
+window#waybar #backlight,
+window#waybar #battery,
+window#waybar #network,
+window#waybar #bluetooth,
+window#waybar #custom-powermenu {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+}
+
+window#waybar #pulseaudio-slider {
+    margin: 0 8px 0 0;
+    opacity: 1;
+}
+
+window#waybar #pulseaudio-slider trough {
+    min-width: 234px;
+}
+
+window#waybar #pulseaudio-slider slider {
+    min-width: 12px;
+    min-height: 12px;
+    margin: -3px 0;
+}

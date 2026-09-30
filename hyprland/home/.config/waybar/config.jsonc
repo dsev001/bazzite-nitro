@@ -7,7 +7,7 @@
     "reload_style_on_change": true,
 
     // Islands: floating 8 px below the edge, indented like the window gaps
-    "height": 27,
+    "height": 38,
     "spacing": 0,
     "margin-top": 8,
     "margin-left": 20,
