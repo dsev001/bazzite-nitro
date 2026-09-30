@@ -4,7 +4,7 @@
     "include": ["/etc/xdg/waybar/config.jsonc"],
     "modules-left": ["tray"],
     "modules-center": ["hyprland/workspaces", "wlr/taskbar"],
-    "modules-right": ["clock", "pulseaudio", "pulseaudio/slider", "backlight", "battery", "network", "bluetooth", "custom/powermenu"],
+    "modules-right": ["clock", "battery", "pulseaudio", "pulseaudio/slider", "backlight", "backlight/slider", "network", "bluetooth", "custom/powermenu"],
     // Taskbar: windows from all workspaces and monitors; click focuses, middle click closes
     "wlr/taskbar": {
         "all-outputs": true,
@@ -21,6 +21,19 @@
     "pulseaudio": {
         "on-click": null,
         "on-click-right": "~/.config/hypr/scripts/audio-menu.sh"
+    },
+    // Brightness: a right click opens the display menu and shows the slider next to it
+    // The slider is 0 px wide until display-menu.sh writes backlight-slider.css (see style.css)
+    // min 5: the panel never goes black (waybar #3359 drops to min after DPMS)
+    "backlight/slider": {
+        "min": 5,
+        "max": 100
+    },
+    // "" replaces the built-in scroll brightness change (waybar #4893 can hang the bar)
+    "backlight": {
+        "on-click-right": "~/.config/hypr/scripts/display-menu.sh",
+        "on-scroll-up": "",
+        "on-scroll-down": ""
     },
     "clock": {
         "format": "{:%a %d.%m.  %H:%M}",

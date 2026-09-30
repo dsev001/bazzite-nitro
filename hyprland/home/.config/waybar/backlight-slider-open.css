@@ -1,0 +1,32 @@
+/* Brightness slider while the display menu is open: display-menu.sh copies this file, limited to the bar under the mouse, to backlight-slider.css
+   The slider replaces network to power and takes their space (fixed widths in style.css, measured),
+   so the island keeps its width and the brightness icon stays under the mouse */
+window#waybar #network,
+window#waybar #bluetooth,
+window#waybar #custom-powermenu {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+}
+
+window#waybar #backlight-slider {
+    margin: 0 8px 0 0;
+    opacity: 1;
+}
+
+window#waybar #backlight-slider trough {
+    min-width: 95px;
+    background: alpha(@outline, 0.4);
+}
+
+window#waybar #backlight-slider highlight {
+    background: @primary;
+}
+
+window#waybar #backlight-slider slider {
+    background: @primary;
+    min-width: 12px;
+    min-height: 12px;
+    margin: -3px 0;
+}

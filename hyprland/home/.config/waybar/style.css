@@ -3,6 +3,8 @@
 @import url("colors.css");
 /* audio-slider.css opens the volume slider; ~/.config/hypr/scripts/audio-menu.sh writes it */
 @import url("audio-slider.css");
+/* backlight-slider.css opens the brightness slider; ~/.config/hypr/scripts/display-menu.sh writes it */
+@import url("backlight-slider.css");
 
 * {
     font-family: "Noto Sans", "Symbols Nerd Font";
@@ -40,11 +42,20 @@ window#waybar {
     color: @on_surface;
 }
 
-/* Fixed widths: the volume slider takes exactly the space of backlight to power
-   while the audio menu is open (audio-slider-open.css: slider 234 px + 8 px margin, measured) */
+/* Fixed widths: an open slider takes exactly the space of the elements to its right
+   (audio-slider-open.css: volume slider 160 px + 8 px margin replaces backlight to power;
+   backlight-slider-open.css: brightness slider 95 px + 8 px margin replaces network to power;
+   both measured with the gaps below: change them together) */
 #pulseaudio { min-width: 44px; }
 #backlight, #battery { min-width: 52px; }
 #network, #bluetooth, #custom-powermenu { min-width: 16px; }
+
+/* Gaps: 15 px between the elements, 13 px around volume and brightness (right padding trimmed) */
+#clock { padding-right: 7px; }
+#battery { padding-right: 6px; }
+#pulseaudio, #backlight { padding: 0 6px 0 7px; }
+#network { padding: 0 7px; }
+#bluetooth { padding-right: 7px; }
 
 #custom-powermenu {
     color: @primary;
@@ -95,34 +106,39 @@ window#waybar {
     background: alpha(@on_surface_variant, 0.2);
 }
 
-/* Volume slider: 0 px wide and invisible until audio-slider.css opens it */
-#pulseaudio-slider {
+/* Volume and brightness sliders: 0 px wide and invisible until audio-slider.css or backlight-slider.css opens them;
+   the colors live in the *-open.css files, so no remains show after closing */
+#pulseaudio-slider,
+#backlight-slider {
     margin: 0;
     padding: 0;
     opacity: 0;
 }
 
-#pulseaudio-slider trough {
+#pulseaudio-slider trough,
+#backlight-slider trough {
     min-width: 0;
     min-height: 6px;
     border-radius: 3px;
-    background: alpha(@outline, 0.4);
+    background: transparent;
 }
 
-#pulseaudio-slider highlight {
+#pulseaudio-slider highlight,
+#backlight-slider highlight {
     min-height: 6px;
     border-radius: 3px;
-    background: @primary;
+    background: transparent;
 }
 
-#pulseaudio-slider slider {
+#pulseaudio-slider slider,
+#backlight-slider slider {
     min-width: 0;
     min-height: 0;
     margin: 0;
     border-radius: 6px;
     border: none;
     box-shadow: none;
-    background: @primary;
+    background: transparent;
 }
 
 tooltip {

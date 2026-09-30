@@ -170,8 +170,8 @@ show_menu() {
 # pick <prompt>: show the entries, set kind, arg and name of the choice; fails on Esc
 pick() {
     local i
-    # 27 characters: from below the volume icon to the end of the island
-    i=$(show_menu | dropdown --prompt="$1" --with-nth=1 --accept-nth=2 --only-match --width=27) || return 1
+    # 20 characters: from below the volume icon to the end of the island
+    i=$(show_menu | dropdown --prompt="$1" --with-nth=1 --accept-nth=2 --only-match --width=20) || return 1
     [[ $i =~ ^[0-9]+$ ]] || return 1
     kind=${kinds[$i]} arg=${args[$i]} name=${names[$i]}
 }
@@ -194,7 +194,9 @@ slider_dir=${XDG_CONFIG_HOME:-$HOME/.config}/waybar
 slider() {
     [ -f "$slider_dir/audio-slider-open.css" ] || return 0
     if [ "$1" = open ]; then
-        cp "$slider_dir/audio-slider-open.css" "$slider_dir/audio-slider.css"
+        # Only the bar under the mouse: waybar gives each bar window its output name as class
+        local out=${DROPDOWN_OUTPUT:-$(dropdown_output)}
+        sed "s/window#waybar /window#waybar${out:+.$out} /g" "$slider_dir/audio-slider-open.css" > "$slider_dir/audio-slider.css"
     else
         printf '/* Written by ~/.config/hypr/scripts/audio-menu.sh: slider closed; do not edit */\n' \
             > "$slider_dir/audio-slider.css"
