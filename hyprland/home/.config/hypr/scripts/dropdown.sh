@@ -1,4 +1,4 @@
-# Shared fuzzel dropdown for the menus of the right waybar island (wifi, power, bt, audio, display)
+# Shared fuzzel dropdown for the menus of the right waybar island (wifi, power, bt, audio, display, battery)
 # Sourced, not run: set dropdown_ns (dropdown-<name>) first; dropdown_center=1 opens it centered instead
 # DROPDOWN_OUTPUT=<monitor> opens it on that monitor instead of the one under the mouse (tests)
 # hyprland.lua (click outside closes) and user.lua (blur) match the namespace prefix dropdown-

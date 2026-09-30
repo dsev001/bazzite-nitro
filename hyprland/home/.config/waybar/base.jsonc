@@ -35,6 +35,10 @@
         "on-scroll-up": "",
         "on-scroll-down": ""
     },
+    // Battery: a right click opens the battery menu (charge, remaining time, power profiles)
+    "battery": {
+        "on-click-right": "~/.config/hypr/scripts/battery-menu.sh"
+    },
     "clock": {
         "format": "{:%a %d.%m.  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>"
