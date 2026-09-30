@@ -1,6 +1,6 @@
 #!/bin/bash
 # Wi-Fi menu for waybar: a fuzzel dropdown below the right island, nmcli does the work
-# A click on the waybar network icon opens it, a second click closes it
+# A right click on the waybar network icon opens it, a second one closes it
 # --print: print the menu (label TAB action) without fuzzel
 # WIFI_MENU_SCAN=<file>: use this file instead of the nmcli scan (tests)
 set -u

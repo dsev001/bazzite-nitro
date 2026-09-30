@@ -51,19 +51,19 @@
         "tooltip-format-ethernet": "{ifname}",
         "tooltip-format-disconnected": "Disconnected",
         // Wi-Fi list below the right island; nm-connection-editor is its "Mehr…" entry
-        "on-click": "~/.config/hypr/scripts/wifi-menu.sh"
+        "on-click-right": "~/.config/hypr/scripts/wifi-menu.sh"
     },
     "bluetooth": {
         "tooltip-format": "{controller_alias}",
         "tooltip-format-connected": "{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}",
         // Device list below the right island; blueman-manager is its "Mehr…" entry
-        "on-click": "~/.config/hypr/scripts/bt-menu.sh"
+        "on-click-right": "~/.config/hypr/scripts/bt-menu.sh"
     },
     // Own name: the Fedora defaults already define custom/power with another menu
     "custom/powermenu": {
         "format": "⏻",
         "tooltip": false,
-        "on-click": "~/.config/hypr/scripts/power-menu.sh"
+        "on-click-right": "~/.config/hypr/scripts/power-menu.sh"
     }
 }
