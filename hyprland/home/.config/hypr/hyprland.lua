@@ -181,6 +181,9 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
+-- Fullscreen for the active window, covers the bar
+hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
+
 -- Lock (hypridle starts hyprlock on lock-session), clipboard history, color picker
 hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"))
@@ -218,6 +221,23 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+-- Close the Wi-Fi dropdown (wifi-menu.sh) on a click outside it; fuzzel keeps the focus otherwise
+-- Clicks on waybar are left out: the icon closes the dropdown itself
+local function inside(p, l) return p.x >= l.x and p.x < l.x + l.w and p.y >= l.y and p.y < l.y + l.h end
+hl.bind("mouse:272", function ()
+    local p = hl.get_cursor_pos()
+    if not p then return end
+    local menu = false
+    for _, l in ipairs(hl.get_layers()) do
+        if l.namespace == "waybar" and inside(p, l) then return end
+        if l.namespace == "wifi-menu" then
+            if inside(p, l) then return end
+            menu = true
+        end
+    end
+    if menu then hl.exec_cmd("pkill -f -- '^fuzzel .*--namespace=wifi-menu( |$)'") end
+end, { non_consuming = true })
 
 -- Volume and brightness through swayosd (shows the OSD), also when locked
 hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("swayosd-client --output-volume raise"),       { locked = true, repeating = true })

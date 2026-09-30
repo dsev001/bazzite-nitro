@@ -22,7 +22,8 @@
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}",
         "tooltip-format-disconnected": "Disconnected",
-        "on-click": "nm-connection-editor"
+        // Wi-Fi list below the right island; nm-connection-editor is its "Mehr…" entry
+        "on-click": "~/.config/hypr/scripts/wifi-menu.sh"
     },
     "bluetooth": {
         "tooltip-format": "{controller_alias}",
