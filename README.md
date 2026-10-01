@@ -12,6 +12,14 @@ An opinionated [Bazzite](https://bazzite.gg) image, developed on an Acer Nitro A
 
   The lists live in `system_files/usr/share/bazzite-nitro/`. The recipe only adds what is missing, so it is safe to run again.
 - **`acpi_backlight=native`** kernel argument, so the display brightness can be changed. It comes from `/usr/lib/bootc/kargs.d/`.
+- **Keyboard backlight** is set at boot. The ENE controller (`0CF2:5130`) starts dark and no kernel driver sets it. A udev rule starts `bazzite-nitro-kbd-backlight@.service`, which sets a static blue (`00a0ff`) at 10 % on all four zones. To change it, run `sudo systemctl edit bazzite-nitro-kbd-backlight@.service` and add:
+
+  ```ini
+  [Service]
+  Environment=BRIGHTNESS=30 COLOR=ffffff
+  ```
+
+  The firmware still turns the backlight off after about 30 seconds without a key press.
 
 Everything else is plain Bazzite.
 
