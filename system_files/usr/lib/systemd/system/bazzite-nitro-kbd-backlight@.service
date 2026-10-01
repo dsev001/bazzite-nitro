@@ -1,0 +1,8 @@
+[Unit]
+Description=Set the keyboard backlight on %I
+# Started by udev, see 70-bazzite-nitro-kbd-backlight.rules
+
+[Service]
+Type=oneshot
+Environment=BRIGHTNESS=10 COLOR=00a0ff
+ExecStart=/usr/libexec/bazzite-nitro/kbd-backlight.py /dev/%I ${BRIGHTNESS} ${COLOR}
