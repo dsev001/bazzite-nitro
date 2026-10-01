@@ -1,0 +1,3 @@
+# The ENE KB5130 keyboard backlight controller (0CF2:5130) starts dark.
+# Set it as soon as its hidraw node appears.
+ACTION=="add", SUBSYSTEM=="hidraw", KERNELS=="0018:0CF2:5130.*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="bazzite-nitro-kbd-backlight@%k.service"
