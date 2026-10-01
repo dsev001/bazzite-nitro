@@ -10,8 +10,38 @@
 ------------------
 
 -- Laptop panel; 1.6 keeps the logical size integer (1600x1000)
-hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "auto", scale = 1.6 })
-hl.monitor({ output = "",      mode = "preferred",     position = "auto", scale = "auto" })
+local panel = { output = "eDP-1", mode = "2560x1600@180", position = "auto", scale = 1.6 }
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
+
+-- A closed lid only locks (logind HandleLidSwitch=lock), the panel would keep its workspaces
+-- out of reach. While another monitor runs, the panel goes off and Hyprland moves its
+-- workspaces there; with the lid open or no other monitor left, it comes back on
+local function lid_closed()
+    local f = io.open("/proc/acpi/button/lid/LID0/state")
+    if not f then return false end
+    local state = f:read("a")
+    f:close()
+    return state:find("closed") ~= nil
+end
+
+-- get_monitors() lists only enabled monitors, without one that is being removed
+local function update_panel(closed, force)
+    local on, other = false, false
+    for _, m in ipairs(hl.get_monitors()) do
+        if m.name == panel.output then on = true else other = true end
+    end
+    local off = closed and other
+    if not force and on ~= off then return end
+    -- disabled = false must be explicit, else a runtime call does not turn the panel back on
+    panel.disabled = off
+    hl.monitor(panel)
+end
+
+update_panel(lid_closed(), true)
+hl.bind("switch:on:Lid Switch",  function () update_panel(true)  end, { locked = true })
+hl.bind("switch:off:Lid Switch", function () update_panel(false) end, { locked = true })
+hl.on("monitor.added",   function () update_panel(lid_closed()) end)
+hl.on("monitor.removed", function () update_panel(lid_closed()) end)
 
 
 ---------------------
