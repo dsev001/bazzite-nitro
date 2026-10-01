@@ -211,8 +211,8 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
--- Fullscreen for the active window, covers the bar
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
+-- Maximize the active window over the workspace, keeps the bar and gaps
+hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 
 -- Lock (hypridle starts hyprlock on lock-session), clipboard history, color picker
 hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("loginctl lock-session"))
