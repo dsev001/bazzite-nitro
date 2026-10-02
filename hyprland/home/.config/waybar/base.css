@@ -1,6 +1,0 @@
-/* Waybar base style: Fedora defaults plus the power button */
-@import url("/etc/xdg/waybar/style.css");
-
-#custom-powermenu {
-    padding: 0 10px;
-}

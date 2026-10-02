@@ -15,6 +15,5 @@ max-icon-size=48
 icon-location=left
 default-timeout=5000
 
-# Urgent notifications (error border, no timeout). Must stay the LAST line:
-# every line after a section header belongs to that section
+# Urgent notifications (error border, no timeout); must stay the LAST line, see colors-urgent
 include=~/.config/mako/colors-urgent

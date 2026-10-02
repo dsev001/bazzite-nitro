@@ -58,12 +58,10 @@ local menu        = "fuzzel"
 ---- AUTOSTART ----
 -------------------
 
--- uwsm also starts XDG autostart entries (nm-applet and blueman-applet are off
--- via ~/.config/autostart, waybar shows Wi-Fi and Bluetooth), but not
--- pam_kwallet_init: its entry has X-systemd-skip=true, so it is started here first
 -- Each tool runs as its own systemd unit, logs: journalctl --user -u 'app-*<tool>*'
--- waybar runs as waybar.service instead (Restart=on-failure, skipped in Plasma),
--- because it crashes when a monitor goes away
+-- pam_kwallet_init: uwsm skips its XDG autostart entry (X-systemd-skip=true), so it starts here first
+-- waybar runs as waybar.service instead (Restart=on-failure): it crashes when a monitor goes away
+-- mako.service is masked (~/.config/systemd/user), else D-Bus activation starts mako in Plasma too
 hl.on("hyprland.start", function ()
     hl.exec_cmd("/usr/libexec/pam_kwallet_init")
     hl.exec_cmd("uwsm app -- hyprpaper")
@@ -202,7 +200,7 @@ hl.gesture({
 ---- KEYBINDINGS ----
 ---------------------
 
--- Default binds from example/hyprland.lua, plus lock, power menu, clipboard, screenshots, color picker
+-- Default binds from example/hyprland.lua plus own additions
 local mainMod = "SUPER"
 
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))

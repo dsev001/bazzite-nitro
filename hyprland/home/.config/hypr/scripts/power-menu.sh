@@ -1,7 +1,7 @@
 #!/bin/bash
 # Power menu for Hyprland: fuzzel dropdown below the right waybar island
 # --center: open in the middle of the screen (keyboard shortcut); --print: print the menu without fuzzel
-# No suspend entry while the NVIDIA resume hang is open
+# No suspend entry while the NVIDIA/DisplayLink resume issues are open
 set -u
 
 dropdown_ns=dropdown-power

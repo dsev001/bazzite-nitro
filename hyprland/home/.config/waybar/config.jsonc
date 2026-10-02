@@ -3,7 +3,7 @@
 {
     "include": ["~/.config/waybar/base.jsonc"],
 
-    // Apply style.css changes on save
+    // Required: the audio and display menus open the sliders by rewriting CSS that style.css imports
     "reload_style_on_change": true,
 
     // Islands: floating 8 px below the edge, indented like the window gaps

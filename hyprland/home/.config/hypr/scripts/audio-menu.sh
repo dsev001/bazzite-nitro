@@ -2,7 +2,7 @@
 # Audio menu for waybar: a fuzzel dropdown below the right island, pactl does the work
 # A right click on the waybar volume opens it with the volume slider, a second one closes both
 # --print [main|mic|app <index>]: print a menu (label TAB action) without fuzzel
-# AUDIO_MENU_PACTL=<command>: use it instead of pactl (tests)
+# AUDIO_MENU_PACTL=<command>: use it instead of pactl (manual tests)
 set -u
 
 dropdown_ns=dropdown-audio

@@ -3,7 +3,7 @@
 # A right click on the waybar battery opens it: charge with remaining time, then the power profiles
 # Power profiles come from tuned-ppd over the PPD D-Bus API; tuned-adm would leave them "unknown"
 # --print: print the menu (label TAB action) without fuzzel
-# BATTERY_MENU_BUSCTL=<command>: use it instead of busctl (tests)
+# BATTERY_MENU_BUSCTL=<command>: use it instead of busctl (manual tests)
 set -u
 
 dropdown_ns=dropdown-battery

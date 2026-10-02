@@ -2,9 +2,9 @@
 # Display menu for waybar: a fuzzel dropdown below the right island
 # A right click on the waybar brightness opens it with the brightness slider, a second one closes both
 # Entries: brightness steps (brightnessctl), night light (hyprsunset)
-# No refresh rate: a runtime mode switch of the laptop panel froze its picture (2026-10-01)
+# No refresh rate: a runtime mode switch of the laptop panel froze its picture
 # --print: print the menu (label TAB action) without fuzzel
-# DISPLAY_MENU_HYPRCTL, DISPLAY_MENU_BRIGHTNESSCTL=<command>: use it instead of hyprctl, brightnessctl (tests)
+# DISPLAY_MENU_HYPRCTL, DISPLAY_MENU_BRIGHTNESSCTL=<command>: use it instead of hyprctl, brightnessctl (manual tests)
 set -u
 
 dropdown_ns=dropdown-display

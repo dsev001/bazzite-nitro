@@ -2,7 +2,7 @@
 # Bluetooth menu for waybar: a fuzzel dropdown below the right island, bluetoothctl does the work
 # A right click on the waybar bluetooth icon opens it, a second one closes it
 # --print: print the menu (label TAB action) without fuzzel
-# BT_MENU_CTL=<command>: use it instead of bluetoothctl (tests)
+# BT_MENU_CTL=<command>: use it instead of bluetoothctl (manual tests)
 set -u
 
 dropdown_ns=dropdown-bt
