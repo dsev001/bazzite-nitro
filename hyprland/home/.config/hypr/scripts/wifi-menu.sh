@@ -2,7 +2,7 @@
 # Wi-Fi menu for waybar: a fuzzel dropdown below the right island, nmcli does the work
 # A right click on the waybar network icon opens it, a second one closes it
 # --print: print the menu (label TAB action) without fuzzel
-# WIFI_MENU_SCAN=<file>: use this file instead of the nmcli scan (tests)
+# WIFI_MENU_SCAN=<file>: use this file instead of the nmcli scan (manual tests)
 set -u
 
 dropdown_ns=dropdown-wifi
@@ -124,10 +124,12 @@ connect_new() {
         fi
         # mktemp creates the file with mode 0600 on the tmpfs of the user
         pwfile=$(mktemp -p "$XDG_RUNTIME_DIR" wifi-menu.XXXXXX)
+        trap 'rm -f "$pwfile"' EXIT
         printf '802-11-wireless-security.psk:%s\n' "$pw" > "$pwfile"
         connect "$ssid" uuid "$uuid" passwd-file "$pwfile"
         rc=$?
         rm -f "$pwfile"
+        trap - EXIT
     else
         connect "$ssid" uuid "$uuid"
         rc=$?
