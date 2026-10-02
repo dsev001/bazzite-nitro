@@ -162,8 +162,9 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,
-        disable_hyprland_logo   = false,
+        -- No anime wallpaper or logo behind windows when hyprpaper is gone; plain background_color
+        force_default_wallpaper = 0,
+        disable_hyprland_logo   = true,
         -- A crashed hyprlock can be restarted without a TTY; the session stays locked
         allow_session_lock_restore = true,
     },

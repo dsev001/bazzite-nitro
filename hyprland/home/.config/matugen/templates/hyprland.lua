@@ -7,4 +7,8 @@ hl.config({
             inactive_border = "rgba(00000000)",
         },
     },
+    misc = {
+        -- Shown where no wallpaper is drawn, e.g. after hyprpaper stops at shutdown
+        background_color = "rgba({{colors.surface.default.hex_stripped}}ff)",
+    },
 })
