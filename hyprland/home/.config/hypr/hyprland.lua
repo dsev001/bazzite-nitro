@@ -61,12 +61,13 @@ local menu        = "fuzzel"
 -- via ~/.config/autostart, waybar shows Wi-Fi and Bluetooth), but not
 -- pam_kwallet_init: its entry has X-systemd-skip=true, so it is started here first
 -- Each tool runs as its own systemd unit, logs: journalctl --user -u 'app-*<tool>*'
+-- waybar runs as waybar.service instead (Restart=on-failure, skipped in Plasma),
+-- because it crashes when a monitor goes away
 hl.on("hyprland.start", function ()
     hl.exec_cmd("/usr/libexec/pam_kwallet_init")
     hl.exec_cmd("uwsm app -- hyprpaper")
     hl.exec_cmd("uwsm app -- hypridle")
     hl.exec_cmd("uwsm app -- hyprsunset")
-    hl.exec_cmd("uwsm app -- waybar")
     hl.exec_cmd("uwsm app -- mako")
     hl.exec_cmd("uwsm app -- swayosd-server")
     hl.exec_cmd("uwsm app -- /usr/libexec/kf6/polkit-kde-authentication-agent-1")
