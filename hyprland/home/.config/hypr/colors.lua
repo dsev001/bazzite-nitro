@@ -3,12 +3,12 @@ hl.config({
     general = {
         col = {
             -- Thin solid accent on the focused window; inactive windows show no border
-            active_border   = "rgba(aec6ffff)",
+            active_border   = "rgba(c9bfffff)",
             inactive_border = "rgba(00000000)",
         },
     },
     misc = {
         -- Shown where no wallpaper is drawn, e.g. after hyprpaper stops at shutdown
-        background_color = "rgba(121318ff)",
+        background_color = "rgba(141318ff)",
     },
 })
