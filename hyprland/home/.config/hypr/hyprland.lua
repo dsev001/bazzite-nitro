@@ -10,7 +10,8 @@
 ------------------
 
 -- Laptop panel; 1.6 keeps the logical size integer (1600x1000)
-local panel = { output = "eDP-1", mode = "2560x1600@180", position = "auto", scale = 1.6 }
+-- auto-left: plain auto puts a panel that comes back on at runtime right of the other monitor
+local panel = { output = "eDP-1", mode = "2560x1600@180", position = "auto-left", scale = 1.6 }
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
 -- A closed lid only locks (logind HandleLidSwitch=lock), the panel would keep its workspaces
