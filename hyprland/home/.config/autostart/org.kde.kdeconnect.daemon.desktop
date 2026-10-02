@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/kdeconnectd
+StartupNotify=false
+X-KDE-autostart-phase=1
+X-GNOME-Autostart-enabled=true
+NoDisplay=true
+Icon=kdeconnect
+Name=KDE Connect
+NotShowIn=Hyprland;
