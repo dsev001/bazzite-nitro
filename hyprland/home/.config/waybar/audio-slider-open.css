@@ -1,6 +1,6 @@
 /* Open volume slider: audio-menu.sh copies this file to audio-slider.css for the bar under the mouse
    It replaces backlight to power, widths in style.css */
-window#waybar #backlight,
+window#waybar #custom-backlight,
 window#waybar #network,
 window#waybar #bluetooth,
 window#waybar #custom-powermenu {
@@ -16,7 +16,7 @@ window#waybar #pulseaudio-slider {
 }
 
 window#waybar #pulseaudio-slider trough {
-    min-width: 160px;
+    min-width: 150px;
     background: alpha(@outline, 0.4);
 }
 

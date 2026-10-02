@@ -43,8 +43,8 @@
         "format-connected-battery": "󰂱",
         "format-no-controller": ""
     },
-    "backlight": {
-        "format": " {percent}%"
+    "custom/backlight": {
+        "format": " {}%"
     },
     "battery": {
         "states": { "warning": 20, "critical": 10 },

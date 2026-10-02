@@ -32,7 +32,7 @@ window#waybar {
 #network,
 #bluetooth,
 #pulseaudio,
-#backlight,
+#custom-backlight,
 #battery,
 #custom-powermenu,
 #clock {
@@ -41,17 +41,17 @@ window#waybar {
 }
 
 /* Fixed widths: an open slider takes exactly the space of the elements to its right
-   (audio-slider-open.css: volume slider 160 px + 8 px margin replaces backlight to power;
-   backlight-slider-open.css: brightness slider 95 px + 8 px margin replaces network to power;
+   (audio-slider-open.css: volume slider 150 px + 8 px margin replaces backlight to power;
+   backlight-slider-open.css: brightness slider 85 px + 8 px margin replaces network to power;
    both measured with the gaps below: change them together) */
 #pulseaudio { min-width: 44px; }
-#backlight, #battery { min-width: 52px; }
+#custom-backlight, #battery { min-width: 52px; }
 #network, #bluetooth, #custom-powermenu { min-width: 16px; }
 
 /* Gaps: 15 px between the elements, 13 px around volume and brightness (right padding trimmed) */
 #clock { padding-right: 7px; }
 #battery { padding-right: 6px; }
-#pulseaudio, #backlight { padding: 0 6px 0 7px; }
+#pulseaudio, #custom-backlight { padding: 0 6px 0 7px; }
 #network { padding: 0 7px; }
 #bluetooth { padding-right: 7px; }
 
@@ -108,6 +108,7 @@ window#waybar {
    the colors live in the *-open.css files, so no remains show after closing */
 #pulseaudio-slider,
 #backlight-slider {
+    min-width: 0;
     margin: 0;
     padding: 0;
     opacity: 0;
@@ -123,6 +124,7 @@ window#waybar {
 
 #pulseaudio-slider highlight,
 #backlight-slider highlight {
+    min-width: 0;
     min-height: 6px;
     border-radius: 3px;
     background: transparent;

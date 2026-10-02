@@ -4,7 +4,7 @@
     "include": ["/etc/xdg/waybar/config.jsonc"],
     "modules-left": ["tray"],
     "modules-center": ["hyprland/workspaces", "wlr/taskbar"],
-    "modules-right": ["clock", "battery", "pulseaudio", "pulseaudio/slider", "backlight", "backlight/slider", "network", "bluetooth", "custom/powermenu"],
+    "modules-right": ["clock", "battery", "pulseaudio", "pulseaudio/slider", "custom/backlight", "backlight/slider", "network", "bluetooth", "custom/powermenu"],
     // Taskbar: windows from all workspaces and monitors; click focuses, middle click closes
     "wlr/taskbar": {
         "all-outputs": true,
@@ -29,11 +29,10 @@
         "min": 5,
         "max": 100
     },
-    // "" replaces the built-in scroll brightness change (waybar #4893 can hang the bar)
-    "backlight": {
-        "on-click-right": "~/.config/hypr/scripts/display-menu.sh",
-        "on-scroll-up": "",
-        "on-scroll-down": ""
+    // Brightness as a custom module: waybar's backlight module hides itself while the panel is off (lid closed)
+    "custom/backlight": {
+        "exec": "~/.config/hypr/scripts/backlight-status.sh",
+        "on-click-right": "~/.config/hypr/scripts/display-menu.sh"
     },
     // Battery: a right click opens the battery menu (charge, remaining time, power profiles)
     "battery": {

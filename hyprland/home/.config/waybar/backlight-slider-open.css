@@ -15,7 +15,7 @@ window#waybar #backlight-slider {
 }
 
 window#waybar #backlight-slider trough {
-    min-width: 95px;
+    min-width: 85px;
     background: alpha(@outline, 0.4);
 }
 
