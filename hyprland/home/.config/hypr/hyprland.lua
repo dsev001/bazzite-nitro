@@ -10,13 +10,16 @@
 ------------------
 
 -- Laptop panel; 1.6 keeps the logical size integer (1600x1000)
--- auto-left: plain auto puts a panel that comes back on at runtime right of the other monitor
-local panel = { output = "eDP-1", mode = "2560x1600@180", position = "auto-left", scale = 1.6 }
+-- auto-left: the panel stays left of the other monitor, whichever comes up first
+local panel = "eDP-1"
+local backlight = "/sys/class/backlight/intel_backlight/brightness"
+hl.monitor({ output = panel, mode = "2560x1600@180", position = "auto-left", scale = 1.6 })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
--- A closed lid only locks (logind HandleLidSwitch=lock), the panel would keep its workspaces
--- out of reach. While another monitor runs, the panel goes off and Hyprland moves its
--- workspaces there; with the lid open or no other monitor left, it comes back on
+-- A closed lid only locks (logind HandleLidSwitch=lock). While another monitor runs, DPMS turns
+-- the panel dark; with the lid open or no other monitor left, it comes back on.
+-- The panel stays enabled and keeps its workspaces: an output that goes away can make
+-- Hyprland drop its clients (hyprwm/Hyprland#15635)
 local function lid_closed()
     local f = io.open("/proc/acpi/button/lid/LID0/state")
     if not f then return false end
@@ -25,24 +28,49 @@ local function lid_closed()
     return state:find("closed") ~= nil
 end
 
--- get_monitors() lists only enabled monitors, without one that is being removed
-local function update_panel(closed, force)
-    local on, other = false, false
-    for _, m in ipairs(hl.get_monitors()) do
-        if m.name == panel.output then on = true else other = true end
-    end
-    local off = closed and other
-    if not force and on ~= off then return end
-    -- disabled = false must be explicit, else a runtime call does not turn the panel back on
-    panel.disabled = off
-    hl.monitor(panel)
+local function brightness()
+    local f = io.open(backlight)
+    if not f then return nil end
+    local value = f:read("n")
+    f:close()
+    return value
 end
 
-update_panel(lid_closed(), true)
-hl.bind("switch:on:Lid Switch",  function () update_panel(true)  end, { locked = true })
-hl.bind("switch:off:Lid Switch", function () update_panel(false) end, { locked = true })
-hl.on("monitor.added",   function () update_panel(lid_closed()) end)
-hl.on("monitor.removed", function () update_panel(lid_closed()) end)
+local dark, saved = false, nil
+
+-- force: set the DPMS state again although it did not change
+local function update_panel(force)
+    local other = false
+    for _, m in ipairs(hl.get_monitors()) do
+        if m.name ~= panel then other = true end
+    end
+    local off = lid_closed() and other
+    if off == dark and not force then return end
+    -- waybar's backlight slider drops the brightness to its min while the panel is dark
+    -- (Alexays/Waybar#3359): keep the value and write it back once the panel is on again
+    if off and not dark then saved = brightness() end
+    hl.dispatch(hl.dsp.dpms({ monitor = panel, action = off and "off" or "on" }))
+    if not off and saved then
+        local value = saved
+        saved = nil
+        hl.timer(function () hl.exec_cmd("brightnessctl -q set " .. value) end, { timeout = 1000, type = "oneshot" })
+    end
+    dark = off
+end
+
+-- Not at once: DPMS straight from a bind is undefined (wiki), and a monitor change has settled by then
+local function panel_later()
+    hl.timer(function () update_panel() end, { timeout = 500, type = "oneshot" })
+end
+
+-- hypridle wakes all monitors, then calls this (hyprctl eval) to turn the panel dark again
+function panel_sync() update_panel(true) end
+
+panel_later()
+hl.bind("switch:on:Lid Switch",  panel_later, { locked = true })
+hl.bind("switch:off:Lid Switch", panel_later, { locked = true })
+hl.on("monitor.added",   panel_later)
+hl.on("monitor.removed", panel_later)
 
 
 ---------------------
