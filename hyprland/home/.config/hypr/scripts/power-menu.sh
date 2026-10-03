@@ -24,9 +24,13 @@ dropdown_toggle
 
 choice=$(menu | dropdown --prompt='Power: ' --with-nth=1 --accept-nth=2 --only-match) || exit 0
 
+# Own scope: hyprshutdown also ends waybar, and inside waybar.service systemd kills it with the unit.
+# A scope, not a service: the post-cmd runs after hyprshutdown has exited
+leave() { systemd-run --user --scope --quiet hyprshutdown "$@"; }
+
 case $choice in
     lock)     loginctl lock-session ;;
-    logout)   hyprshutdown ;;
-    reboot)   hyprshutdown --post-cmd 'systemctl reboot' ;;
-    poweroff) hyprshutdown --post-cmd 'systemctl poweroff' ;;
+    logout)   leave ;;
+    reboot)   leave --post-cmd 'systemctl reboot' ;;
+    poweroff) leave --post-cmd 'systemctl poweroff' ;;
 esac
