@@ -259,6 +259,19 @@ hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 -- Maximize the active window over the workspace, keeps the bar and gaps
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 
+-- hypridle calls this once hyprlock has ended (hyprctl eval). On unlock Hyprland gives the keyboard only
+-- to a window under the pointer. With the pointer elsewhere the active window stays without it, and a
+-- click on that window does not bring it back: focus the window again, the pointer moves onto it
+-- Not at once: Hyprland may still handle the unlock
+function focus_restore()
+    hl.timer(function ()
+        local w, c = hl.get_active_window(), hl.get_cursor_pos()
+        if not w then return end
+        local inside = c.x >= w.at.x and c.x < w.at.x + w.size.x and c.y >= w.at.y and c.y < w.at.y + w.size.y
+        if not inside then hl.dispatch(hl.dsp.focus({ window = w })) end
+    end, { timeout = 200, type = "oneshot" })
+end
+
 -- Lock (hypridle starts hyprlock on lock-session), clipboard history, color picker
 hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"))
