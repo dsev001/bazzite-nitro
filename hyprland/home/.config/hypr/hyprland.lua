@@ -38,6 +38,15 @@ end
 
 local dark, saved = false, nil
 
+-- Only this file saves the brightness and writes it back, so the order of lid, dock and input
+-- does not matter. A saved value stays until it is written back: what the backlight holds
+-- meanwhile may be dimmed or dropped
+local function restore()
+    if dark or not saved then return end
+    hl.exec_cmd("brightnessctl -q set " .. saved)
+    saved = nil
+end
+
 -- force: set the DPMS state again although it did not change
 local function update_panel(force)
     local other = false
@@ -49,13 +58,9 @@ local function update_panel(force)
     if off == dark and not force then return end
     -- waybar's backlight slider drops the brightness to its min while the panel is dark
     -- (Alexays/Waybar#3359): keep the value and write it back once the panel is on again
-    if off and not dark then saved = brightness() end
+    if off and not dark then saved = saved or brightness() end
     hl.dispatch(hl.dsp.dpms({ monitor = panel, action = off and "off" or "on" }))
-    if not off and saved then
-        local value = saved
-        saved = nil
-        hl.timer(function () hl.exec_cmd("brightnessctl -q set " .. value) end, { timeout = 1000, type = "oneshot" })
-    end
+    if not off and saved then hl.timer(restore, { timeout = 1000, type = "oneshot" }) end
     -- logind skips the lid while docked and locks only when the lid moves: when the other monitor
     -- leaves and the lid is still closed, nothing has locked the session yet
     if dark and not off and closed then hl.exec_cmd("loginctl lock-session") end
@@ -67,7 +72,14 @@ local function panel_later()
     hl.timer(function () update_panel() end, { timeout = 500, type = "oneshot" })
 end
 
--- hypridle wakes all monitors, then calls this (hyprctl eval) to turn the panel dark again
+-- hypridle calls these two (hyprctl eval). panel_dim: dim the panel after 5 min.
+-- panel_sync: hypridle woke all monitors, turn the panel dark again or write the brightness back
+function panel_dim()
+    if dark then return end
+    saved = saved or brightness()
+    if saved then hl.exec_cmd("brightnessctl -q set 10%") end
+end
+
 function panel_sync() update_panel(true) end
 
 panel_later()
