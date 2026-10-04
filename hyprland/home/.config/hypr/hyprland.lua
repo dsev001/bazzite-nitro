@@ -44,7 +44,8 @@ local function update_panel(force)
     for _, m in ipairs(hl.get_monitors()) do
         if m.name ~= panel then other = true end
     end
-    local off = lid_closed() and other
+    local closed = lid_closed()
+    local off = closed and other
     if off == dark and not force then return end
     -- waybar's backlight slider drops the brightness to its min while the panel is dark
     -- (Alexays/Waybar#3359): keep the value and write it back once the panel is on again
@@ -55,6 +56,9 @@ local function update_panel(force)
         saved = nil
         hl.timer(function () hl.exec_cmd("brightnessctl -q set " .. value) end, { timeout = 1000, type = "oneshot" })
     end
+    -- logind skips the lid while docked and locks only when the lid moves: when the other monitor
+    -- leaves and the lid is still closed, nothing has locked the session yet
+    if dark and not off and closed then hl.exec_cmd("loginctl lock-session") end
     dark = off
 end
 
