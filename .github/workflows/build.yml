@@ -21,8 +21,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check:
+    name: Check whether to build
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: read
+
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+
+    steps:
+      # Only scheduled runs need the repository and just.
+      - name: Checkout
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install just
+        if: github.event_name == 'schedule'
+        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 #v4.0.0
+
+      # Scheduled runs build only when `just needs-build` says so. All other events build.
+      - name: Run needs-build
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          BUILD=true
+          if [[ "${EVENT_NAME}" == "schedule" ]]; then
+            # A separate assignment, so a failing check fails the step.
+            BUILD=$(just needs-build)
+          fi
+          echo "build=${BUILD}" >> "${GITHUB_OUTPUT}"
+
   build_push:
     name: Build and push image
+    needs: check
+    if: needs.check.outputs.build == 'true'
     runs-on: ubuntu-26.04
 
     permissions:
@@ -31,7 +66,6 @@ jobs:
       id-token: write
 
     steps:
-      # These stage versions are pinned by https://github.com/renovatebot/renovate
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

@@ -63,7 +63,7 @@ systemctl reboot
 
 ## Updates and rollback
 
-CI builds a new image every day and on every push to `main`. To update by hand:
+CI builds a new image on every push to `main`. Every day it also checks for a new Bazzite base image, an unbuilt commit or a missing signature, and builds only then. To build without a change, run the **Build container image** workflow by hand. To update by hand:
 
 ```bash
 sudo bootc upgrade && systemctl reboot
@@ -77,13 +77,20 @@ To go back to the previous image:
 sudo bootc rollback && systemctl reboot
 ```
 
+The labels `org.opencontainers.image.base.digest` and `org.opencontainers.image.revision` name the base image digest and the commit of an image:
+
+```bash
+skopeo inspect --no-tags docker://ghcr.io/<owner>/bazzite-nitro:latest | jq .Labels
+```
+
 ## Building locally
 
-Needs `just` and `podman`.
+Needs `just`, `podman`, `skopeo` and `jq`.
 
 ```bash
 just build                      # container image
 just build-iso                  # installer ISO from the built image, needs sudo
 just lint                       # shellcheck
 bash tests/nitro-setup.test.sh  # tests for nitro-setup
+bash tests/needs-build.test.sh  # tests for needs-build
 ```
