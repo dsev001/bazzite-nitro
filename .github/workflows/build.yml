@@ -32,10 +32,13 @@ jobs:
       build: ${{ steps.check.outputs.build }}
 
     steps:
+      # Only scheduled runs need the repository and just.
       - name: Checkout
+        if: github.event_name == 'schedule'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install just
+        if: github.event_name == 'schedule'
         uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 #v4.0.0
 
       # Scheduled runs build only when `just needs-build` says so. All other events build.
