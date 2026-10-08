@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   check:
-    name: Check for a new base image
+    name: Check whether to build
     runs-on: ubuntu-26.04
 
     permissions:
@@ -39,7 +39,7 @@ jobs:
         uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 #v4.0.0
 
       # Scheduled runs build only when `just needs-build` says so. All other events build.
-      - name: Check base image
+      - name: Run needs-build
         id: check
         env:
           EVENT_NAME: ${{ github.event_name }}

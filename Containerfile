@@ -1,5 +1,5 @@
 ### BASE IMAGE
-## Set in image-template.env. `just build` passes it pinned to the current digest.
+## Set in image-template.env.
 ARG BASE_IMAGE
 
 # Allow build scripts to be referenced without being copied into the final image
@@ -8,17 +8,8 @@ COPY build_files /
 COPY system_files /system_files
 COPY cosign.pub /cosign.pub
 
-# Base Image
+# Base image, pinned by `just build`
 FROM ${BASE_IMAGE}
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:testing
-# FROM ghcr.io/ublue-os/aurora:stable
-# FROM ghcr.io/ublue-os/bluefin-nvidia-open:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:44
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
 
 ### [IM]MUTABLE /opt
 ## Some bootable images, like Fedora, have /opt symlinked to /var/opt, in order to

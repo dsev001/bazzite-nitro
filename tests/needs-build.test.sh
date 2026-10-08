@@ -9,7 +9,7 @@ trap 'rm -rf "$ROOT"' EXIT
 failures=0
 
 # Fixed configuration. The environment wins over image-template.env.
-# Mixed case: GHCR paths are lowercase.
+# Mixed case checks that the recipe lowercases the GHCR path.
 export REPO_ORGANIZATION="Test-Org" IMAGE_NAME="test-image" DEFAULT_TAG="latest"
 export BASE_IMAGE="registry.test/base/image:stable"
 

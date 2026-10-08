@@ -92,5 +92,5 @@ just build                      # container image
 just build-iso                  # installer ISO from the built image, needs sudo
 just lint                       # shellcheck
 bash tests/nitro-setup.test.sh  # tests for nitro-setup
-bash tests/needs-build.test.sh  # tests for the base image check
+bash tests/needs-build.test.sh  # tests for needs-build
 ```
