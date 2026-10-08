@@ -1,6 +1,6 @@
 ### BASE IMAGE
-## Set in image-template.env.
-ARG BASE_IMAGE
+## Set in image-template.env. The default keeps a plain `podman build` working, keep it in sync.
+ARG BASE_IMAGE=ghcr.io/ublue-os/bazzite-nvidia-open:stable
 
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
