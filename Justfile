@@ -6,6 +6,7 @@ export repo_organization := env_var("REPO_ORGANIZATION")
 export image_desc := env_var("IMAGE_DESC")
 export default_tag := env_var("DEFAULT_TAG")
 export bib_image := env_var("BIB_IMAGE")
+export base_image := env_var("BASE_IMAGE")
 
 alias build-vm := build-qcow2
 alias rebuild-vm := rebuild-qcow2
@@ -116,6 +117,42 @@ build $target_image=image_name $tag=default_tag:
     PODMAN_BUILD_ARGS=("${BUILD_ARGS[@]}" "${LABELS[@]}" --pull=newer --tag "${target_image}:${tag}" --file Containerfile)
 
     podman build "${PODMAN_BUILD_ARGS[@]}" .
+
+# Print the current digest of the base image
+[group('Utility')]
+base-digest:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    skopeo inspect --no-tags "docker://${base_image}" | jq -r .Digest
+
+# Print true when CI should build: new base, unbuilt commit or unsigned image
+[group('Utility')]
+needs-build:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    IMAGE="docker://ghcr.io/${repo_organization,,}/${image_name}"
+    BASE_DIGEST=$(just base-digest)
+    REVISION=$(git rev-parse HEAD)
+    if ! OWN=$(skopeo inspect --no-tags "${IMAGE}:${default_tag}"); then
+        echo true
+        exit 0
+    fi
+    LABEL_BASE=$(jq -r '.Labels["org.opencontainers.image.base.digest"] // empty' <<<"${OWN}")
+    LABEL_REVISION=$(jq -r '.Labels["org.opencontainers.image.revision"] // empty' <<<"${OWN}")
+    DIGEST=$(jq -r .Digest <<<"${OWN}")
+    # A cancelled or failed push build leaves an older revision behind.
+    if [[ "${LABEL_BASE}" != "${BASE_DIGEST}" || "${LABEL_REVISION}" != "${REVISION}" ]]; then
+        echo true
+        exit 0
+    fi
+    # Push comes before signing. An aborted run leaves an unsigned image behind.
+    if ! skopeo inspect --raw "${IMAGE}:${DIGEST/:/-}.sig" >/dev/null; then
+        echo true
+        exit 0
+    fi
+    echo false
 
 # Split the image for smaller updates (New)!
 rechunk $target_image=image_name $tag=default_tag:
