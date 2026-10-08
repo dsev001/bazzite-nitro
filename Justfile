@@ -99,6 +99,9 @@ build $target_image=image_name $tag=default_tag:
 
     BUILD_ARGS=()
     BUILD_ARGS+=("--build-arg" "IMAGE_REPOSITORY=ghcr.io/${repo_organization,,}/${image_name}")
+    # Build exactly this digest, so the label names the base in use.
+    BASE_DIGEST=$(just base-digest)
+    BUILD_ARGS+=("--build-arg" "BASE_IMAGE=${base_image}@${BASE_DIGEST}")
     LABELS=()
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)
@@ -112,6 +115,8 @@ build $target_image=image_name $tag=default_tag:
     LABELS+=("--label" "org.opencontainers.image.description={{ image_desc }}")
     LABELS+=("--label" "org.opencontainers.image.title={{ image_name }}")
     LABELS+=("--label" "org.opencontainers.image.vendor={{ repo_organization }}")
+    LABELS+=("--label" "org.opencontainers.image.base.digest=${BASE_DIGEST}")
+    LABELS+=("--label" "org.opencontainers.image.revision=$(git rev-parse HEAD)")
 
     # This actually builds the image!
     PODMAN_BUILD_ARGS=("${BUILD_ARGS[@]}" "${LABELS[@]}" --pull=newer --tag "${target_image}:${tag}" --file Containerfile)
@@ -201,6 +206,15 @@ ostree-rechunk $target_image=image_name $tag=default_tag:
 
     GRAPHROOT="$(podman info --format '{{ '{{.Store.GraphRoot}}' }}')"
 
+    # rpm-ostree builds from the rootfs and drops all labels. Keep the labels that `just needs-build` reads.
+    KEEP_LABELS=()
+    for key in org.opencontainers.image.base.digest org.opencontainers.image.revision; do
+        value=$(podman image inspect "${RPM_OSTREE_CHUNKER_IMAGE}" | jq -r --arg key "${key}" '.[0].Labels[$key] // empty')
+        if [[ -n "${value}" ]]; then
+            KEEP_LABELS+=("--label" "${key}=${value}")
+        fi
+    done
+
     podman run --rm --pull=never --privileged \
       --mount=type=image,src="${target_image}:${tag}",target=/rpm-ostree \
       --mount=type=bind,src=${GRAPHROOT},target=/run/host-container-storage,rw \
@@ -212,6 +226,7 @@ ostree-rechunk $target_image=image_name $tag=default_tag:
       --format-version=2 \
       --bootc \
       --rootfs /rpm-ostree \
+      "${KEEP_LABELS[@]}" \
       --output "containers-storage:[overlay@/run/host-container-storage+/run/rpm-ostree-storage]localhost/${target_image}:${tag}"
 
 # Generate Default Tag

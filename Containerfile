@@ -1,3 +1,7 @@
+### BASE IMAGE
+## Set in image-template.env. `just build` passes it pinned to the current digest.
+ARG BASE_IMAGE
+
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
 COPY build_files /
@@ -5,7 +9,7 @@ COPY system_files /system_files
 COPY cosign.pub /cosign.pub
 
 # Base Image
-FROM ghcr.io/ublue-os/bazzite-nvidia-open:stable@sha256:de1d2b57d34f96d14927bb791f5ee4882c285b4b5957398dc230384c6d823bfe
+FROM ${BASE_IMAGE}
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:testing
 # FROM ghcr.io/ublue-os/aurora:stable
