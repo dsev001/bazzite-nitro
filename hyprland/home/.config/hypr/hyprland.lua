@@ -279,6 +279,16 @@ hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"))
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 
+-- Open the newest notification like a click: run its default action, then close it. makoctl sends no
+-- activation token, so the app may only turn urgent: focus the urgent window once the app has answered
+hl.bind(mainMod .. " + N", function ()
+    hl.exec_cmd("makoctl invoke && makoctl dismiss")
+    hl.timer(function ()
+        local w = hl.get_urgent_window()
+        if w then hl.dispatch(hl.dsp.focus({ window = w })) end
+    end, { timeout = 500, type = "oneshot" })
+end)
+
 -- Screenshots: area or current monitor, edited in satty; Ctrl+S saves, Ctrl+C copies
 -- Folder: $SCREENSHOT_DIR (set in user.lua), else <Pictures>/Screenshots; created on demand
 local shotDir = [[${SCREENSHOT_DIR:-$(xdg-user-dir PICTURES)/Screenshots}]]
