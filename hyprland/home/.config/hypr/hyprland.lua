@@ -210,6 +210,8 @@ hl.config({
         disable_hyprland_logo   = true,
         -- A crashed hyprlock can be restarted without a TTY; the session stays locked
         allow_session_lock_restore = true,
+        -- A click on a notification focuses the sending app (mako passes an xdg-activation token)
+        focus_on_activate = true,
     },
 })
 
