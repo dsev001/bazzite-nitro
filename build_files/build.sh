@@ -33,7 +33,7 @@ sed -i 's/^enabled=1$/enabled=0/' /etc/yum.repos.d/terra-mesa.repo
 # provides is missing, so this step drops out once Terra fixes the repo.
 # grep -q on a pipe can make rpm fail with SIGPIPE under pipefail, so read the provides first.
 xwayland_provides=$(rpm -q --provides terra-xorg-x11-server-Xwayland)
-if ! grep -qF 'xorg-x11-server-Xwayland(x86-64)' <<<"${xwayland_provides}"; then
+if ! grep -q '^xorg-x11-server-Xwayland(x86-64) ' <<<"${xwayland_provides}"; then
 	dnf5 versionlock delete terra-xorg-x11-server-Xwayland
 	dnf5 -y downgrade terra-xorg-x11-server-Xwayland-24.1.14
 	dnf5 versionlock add terra-xorg-x11-server-Xwayland
@@ -79,4 +79,4 @@ echo "73cbf8fc8e821d09d5166a77134c9935c67c133a48d0844bcb77687c9645876e  /etc/pki
 jq -e --arg repo "${IMAGE_REPOSITORY}" '.transports.docker[$repo][0].type == "sigstoreSigned"' /etc/containers/policy.json
 # Layered packages that require xorg-x11-server-Xwayland(x86-64) need this provides.
 xwayland_provides=$(rpm -q --provides terra-xorg-x11-server-Xwayland)
-grep -qF 'xorg-x11-server-Xwayland(x86-64)' <<<"${xwayland_provides}"
+grep -q '^xorg-x11-server-Xwayland(x86-64) ' <<<"${xwayland_provides}"
