@@ -35,7 +35,7 @@ sed -i 's/^enabled=1$/enabled=0/' /etc/yum.repos.d/terra-mesa.repo
 xwayland_provides=$(rpm -q --provides terra-xorg-x11-server-Xwayland)
 if ! grep -q '^xorg-x11-server-Xwayland(x86-64) ' <<<"${xwayland_provides}"; then
 	dnf5 versionlock delete terra-xorg-x11-server-Xwayland
-	dnf5 -y downgrade terra-xorg-x11-server-Xwayland-24.1.14
+	dnf5 -y downgrade --repo terra-extras terra-xorg-x11-server-Xwayland-24.1.14
 	dnf5 versionlock add terra-xorg-x11-server-Xwayland
 fi
 
