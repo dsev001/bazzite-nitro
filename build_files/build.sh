@@ -55,6 +55,12 @@ echo 'L+ /var/opt/brave.com - - - - /usr/lib/opt/brave.com' >/usr/lib/tmpfiles.d
 # /var/opt itself is recreated at boot by rpm-ostree-0-integration-opt-usrlocal.conf
 rmdir /var/opt
 
+### DisplayLink
+# Bazzite dropped the displaylink package from the image (opt-in via ujust install-displaylink,
+# which layers it). The dock needs its manager service at boot, so ship it in the image.
+# fedora-multimedia (negativo17) stays disabled in the final image, updates arrive via rebuilds.
+dnf5 -y install --enable-repo=fedora-multimedia displaylink
+
 ### Bazzite default Flatpaks, used by ujust nitro-setup to skip them during migration
 mkdir -p /usr/share/bazzite-nitro
 curl -fsSL https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/kde_flatpaks/flatpaks \
@@ -80,3 +86,6 @@ jq -e --arg repo "${IMAGE_REPOSITORY}" '.transports.docker[$repo][0].type == "si
 # Layered packages that require xorg-x11-server-Xwayland(x86-64) need this provides.
 xwayland_provides=$(rpm -q --provides terra-xorg-x11-server-Xwayland)
 grep -q '^xorg-x11-server-Xwayland(x86-64) ' <<<"${xwayland_provides}"
+# The dock stays dark without the manager service and the evdi kernel module.
+rpm -q displaylink libevdi kmod-evdi
+test -f /usr/lib/systemd/system/displaylink.service
