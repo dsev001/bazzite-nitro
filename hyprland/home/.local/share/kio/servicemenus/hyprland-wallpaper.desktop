@@ -1,0 +1,12 @@
+# Dolphin context menu: set an image as Hyprland wallpaper (desktop, hyprlock, matugen colors)
+# Plasma's own entry fails in Hyprland: it needs plasmashell over D-Bus
+# KIO only loads service menus from the home folder when the file is executable
+[Desktop Entry]
+Type=Service
+MimeType=image/jpeg;image/png;
+Actions=setHyprlandWallpaper
+
+[Desktop Action setHyprlandWallpaper]
+Name=Als Hintergrund festlegen (Hyprland)
+Icon=preferences-desktop-wallpaper
+Exec=sh -c "\\$HOME/.config/hypr/scripts/wallpaper.sh \\"\\$0\\"" %f
