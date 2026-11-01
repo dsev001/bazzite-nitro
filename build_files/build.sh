@@ -28,14 +28,17 @@ sed -i 's/^enabled=1$/enabled=0/' /etc/yum.repos.d/terra-mesa.repo
 ### Terra Xwayland
 # Bazzite swaps in terra-xorg-x11-server-Xwayland. The 26.0.99.903 build in terra-extras
 # is not provided as xorg-x11-server-Xwayland(x86-64), so layered Hyprland packages
-# (hyprland requires that name) fail to depsolve. 24.1.14 provides it. Terra still ranks
-# 26.0.99.903 higher, so Bazzite picks the broken build. Downgrade only while the
-# provides is missing, so this step drops out once Terra fixes the repo.
+# (hyprland requires that name) fail to depsolve. The 24.1.x builds provide it (24.1.14 on
+# f44, 24.1.13 on f45). Terra still ranks 26.0.99.903 higher, so Bazzite picks the broken
+# build. Downgrade to the newest build with the provides, and only while it is missing,
+# so this step drops out once Terra fixes the repo.
 # grep -q on a pipe can make rpm fail with SIGPIPE under pipefail, so read the provides first.
 xwayland_provides=$(rpm -q --provides terra-xorg-x11-server-Xwayland)
 if ! grep -q '^xorg-x11-server-Xwayland(x86-64) ' <<<"${xwayland_provides}"; then
+	xwayland_evr=$(dnf5 repoquery --repo terra-extras --whatprovides 'xorg-x11-server-Xwayland(x86-64)' \
+		--qf '%{evr}\n' | sort -uV | tail -n1)
 	dnf5 versionlock delete terra-xorg-x11-server-Xwayland
-	dnf5 -y downgrade --repo terra-extras terra-xorg-x11-server-Xwayland-24.1.14
+	dnf5 -y downgrade --repo terra-extras "terra-xorg-x11-server-Xwayland-${xwayland_evr:?}"
 	dnf5 versionlock add terra-xorg-x11-server-Xwayland
 fi
 
