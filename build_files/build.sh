@@ -22,8 +22,13 @@ cp -avf "/ctx/system_files"/. /
 ### Terra Mesa repo
 # Bazzite disables terra-mesa in /etc/dnf/repos.override.d, but bib reads only
 # /etc/yum.repos.d when it depsolves the ISO and fails on the repo's file:// GPG key.
-# Write the same state into the repo file.
-sed -i 's/^enabled=1$/enabled=0/' /etc/yum.repos.d/terra-mesa.repo
+# Write the same state into the repo file. Fedora 45 moved packaged repo files to
+# /usr/share/dnf5/repos.d.
+for repo_file in /etc/yum.repos.d/terra-mesa.repo /usr/share/dnf5/repos.d/terra-mesa.repo; do
+	if [[ -f "${repo_file}" ]]; then
+		sed -i 's/^enabled=1$/enabled=0/' "${repo_file}"
+	fi
+done
 
 ### Terra Xwayland
 # Bazzite swaps in terra-xorg-x11-server-Xwayland. The 26.0.99.903 build in terra-extras
