@@ -87,6 +87,10 @@ mv /tmp/policy.json /etc/containers/policy.json
 printf 'docker:\n  %s:\n    use-sigstore-attachments: true\n' "${IMAGE_REPOSITORY}" \
 	>/etc/containers/registries.d/bazzite-nitro.yaml
 
+### Cleanup
+# dnf5 leaves its lock dir and repo state behind, bootc container lint flags both.
+rm -rf /run/dnf /var/lib/dnf/repos
+
 ### Checks
 # A wrong or empty key would cut the device off from updates after the switch.
 echo "73cbf8fc8e821d09d5166a77134c9935c67c133a48d0844bcb77687c9645876e  /etc/pki/containers/bazzite-nitro.pub" | sha256sum -c
