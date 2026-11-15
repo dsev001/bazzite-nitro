@@ -90,6 +90,9 @@ printf 'docker:\n  %s:\n    use-sigstore-attachments: true\n' "${IMAGE_REPOSITOR
 ### Cleanup
 # dnf5 leaves its lock dir and repo state behind, bootc container lint flags both.
 rm -rf /run/dnf /var/lib/dnf/repos
+# Same content should give the same chunkah layers, so reset the mtimes this build changed.
+# The base image already uses the epoch, so this touches only our files.
+find /usr /etc /opt -newermt '1970-01-01T00:00:00Z' -exec touch -h -a -m -d '1970-01-01T00:00:00Z' {} +
 
 ### Checks
 # A wrong or empty key would cut the device off from updates after the switch.
